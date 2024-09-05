@@ -1,0 +1,2 @@
+../Core/Src/user_gpio_proc.c:30:13:LED_Proc	8	static
+../Core/Src/user_gpio_proc.c:40:6:GPIO_Proc	8	static
