@@ -22,10 +22,49 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
+#include "usbd_def.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
+
+#ifndef DEBUG
+#define DEBUG
+#endif
+#ifdef DEBUG
+#define CONCAT_3(p1, p2, p3)  CONCAT_3_(p1, p2, p3)
+/** Auxiliary macro used by @ref CONCAT_3 */
+#define CONCAT_3_(p1, p2, p3) p1##p2##p3
+
+#define STRINGIFY_(val) #val
+/** Converts a macro argument into a character constant.*/
+#define STRINGIFY(val)  STRINGIFY_(val)
+
+/* FW and Board Information */
+#define PROJECT_NAME                "STM32F429ZI TEST"
+
+/* board revision */
+#define BD_VER_MAJOR                0
+#define BD_VER_MINOR                1
+/* firmware version */
+#define FW_VER_MAJOR                0
+#define FW_VER_MINOR                1
+
+/* board revision */
+#define HW_BD_REV_01    ( ( 0 << 4 ) | ( 1 ) )
+#define STR_BD_VER      "v" STRINGIFY( BD_VER_MAJOR ) "." STRINGIFY( BD_VER_MINOR )
+#define DEF_BD_VER      CONCAT_3( HW_BD_REV_01, BD_VER_MAJOR, BD_VER_MINOR )
+/* firmware version */
+#define STR_FW_VER                      "v" STRINGIFY( FW_VER_MAJOR ) "." STRINGIFY( FW_VER_MINOR ) "." STRINGIFY( FW_VER_PATCH )
+#define STR_FW_VER_LEN                  6
+#define STR_HW_VER                      "v" STRINGIFY( BD_VER_MAJOR ) "." STRINGIFY( BD_VER_MINOR )
+#endif
+
+extern void BootMessagePrint (void);
+extern void GetClockSourcePrint (void);
+
+extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 
 /*
     GPIO LED Pin Number.

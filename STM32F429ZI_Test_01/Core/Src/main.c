@@ -97,6 +97,10 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  HAL_Delay(5000);
+  BootMessagePrint();
+  GetClockSourcePrint();
+
   HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
 
