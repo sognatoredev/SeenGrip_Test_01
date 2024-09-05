@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    user_gpio_proc.c
+  * @file    user_usb_proc.c
   * @brief   This file provides code for the configuration
-  *          of all used GPIO pins.
+  *          of all used usb process.
   ******************************************************************************
   * @attention
   *
@@ -13,27 +13,28 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "user.h"
+#include "user_gpio_proc.h"
 
 /*----------------------------------------------------------------------------*/
-/* Configure                                                                  */
+/* Configure GPIO                                                             */
 /*----------------------------------------------------------------------------*/
-/* Timer ch 1 count var. */
-uint32_t TIM1_CNT_1 = 0;
-uint32_t TIM1_CNT_2 = 0;
-
-#define CDC_RXDATA_SIZE         256
-#define CDC_TXDATA_SIZE         256
-
-uint8_t USB_CdcRxBuffer_FS[CDC_RXDATA_SIZE] = { 0 };
-uint8_t USB_CdcTxBuffer_FS[CDC_TXDATA_SIZE] = { 0 };
-
-#define USER_STR_SIZE           1024
-
-uint8_t User_Str[USER_STR_SIZE] = { 0 };
+static uint16_t count = 0;
 
 /* USER CODE BEGIN 1 */
+void USB_CDC_Proc (void)
+{
+    if (TIM1_CNT_2 >= 1000)
+    {
+        TIM1_CNT_2 = 0;
 
+        sprintf(USB_CdcTxBuffer_FS, "USB CDC TEST %d\r\n", count);
+        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        
+        memset(USB_CdcTxBuffer_FS,0,strlen(USB_CdcTxBuffer_FS));
+        
+        count++;
+    }
+}
 /* USER CODE END 1 */
 
 /* USER CODE BEGIN 2 */

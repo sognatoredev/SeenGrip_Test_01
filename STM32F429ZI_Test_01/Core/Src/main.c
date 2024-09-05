@@ -105,6 +105,7 @@ int main(void)
   while (1)
   {
     GPIO_Proc();
+    USB_CDC_Proc();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
