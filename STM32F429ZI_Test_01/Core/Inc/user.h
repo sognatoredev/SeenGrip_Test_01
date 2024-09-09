@@ -94,8 +94,8 @@ extern uint32_t TIM1_CNT_2;
 #define CDC_RXDATA_SIZE             256
 #define CDC_TXDATA_SIZE             256
 
-#define UART_RX_BUFFER_MAX_SIZE     1024
-#define UART_TX_BUFFER_MAX_SIZE     1024
+#define UART_RX_BUFFER_MAX_SIZE     30
+#define UART_TX_BUFFER_MAX_SIZE     30
 
 extern uint8_t USB_CdcRxBuffer_FS[];
 extern uint8_t USB_CdcTxBuffer_FS[];
@@ -113,6 +113,7 @@ extern uint8_t uart2_rx_buffer[];
 extern uint8_t uart2_tx_buffer[];
 
 extern uint16_t Uart_Rx_IdlelineSize;
+extern uint8_t Uart_Rx_IdlelineIT_Flag;
 
 /* USER CODE END Private defines */
 
