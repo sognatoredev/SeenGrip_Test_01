@@ -25,6 +25,8 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include "usbd_def.h"
+#include "usart.h"
+#include "dma.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -89,13 +91,28 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 extern uint32_t TIM1_CNT_1;
 extern uint32_t TIM1_CNT_2;
 
+#define CDC_RXDATA_SIZE             256
+#define CDC_TXDATA_SIZE             256
+
+#define UART_RX_BUFFER_MAX_SIZE     1024
+#define UART_TX_BUFFER_MAX_SIZE     1024
+
 extern uint8_t USB_CdcRxBuffer_FS[];
 extern uint8_t USB_CdcTxBuffer_FS[];
 
 extern uint32_t USB_CdcRxBuffer_FS_cnt;
-#define USB_CDC_RX_CNT      (USB_CdcRxBuffer_FS_cnt - 2)
+#define USB_CDC_RX_CNT                    (USB_CdcRxBuffer_FS_cnt - 2) // \r\n 제외한 cmd 구분하기 위해 -2 byte
 
 extern uint8_t User_Str[];
+
+
+extern uint8_t uart1_rx_buffer[];
+extern uint8_t uart1_tx_buffer[];
+
+extern uint8_t uart2_rx_buffer[];
+extern uint8_t uart2_tx_buffer[];
+
+extern uint16_t Uart_Rx_IdlelineSize;
 
 /* USER CODE END Private defines */
 

@@ -1,3 +1,3 @@
-../Core/Src/user.c:58:6:BootMessagePrint	8	static
-../Core/Src/user.c:80:6:GetClockSourcePrint	8	static
-../Core/Src/user.c:101:6:User_CDC_Transmit_FS	16	static
+../Core/Src/user.c:64:6:BootMessagePrint	8	static
+../Core/Src/user.c:86:6:GetClockSourcePrint	8	static
+../Core/Src/user.c:107:6:User_CDC_Transmit_FS	16	static

@@ -85,13 +85,22 @@ void USB_CDC_RX_Proc(void)
         }
         else if (!strncmp("SYSTEM RESET", USB_CdcRxBuffer_FS, USB_CDC_RX_CNT))
         {
-            sprintf(USB_CdcTxBuffer_FS, "SYSTEM RESET\r\n");
+            sprintf(USB_CdcTxBuffer_FS, "SYSTEM Reset\r\n");
             User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+            HAL_Delay(100);
             HAL_NVIC_SystemReset();
+        }
+        else if (!strncmp("SYSTEM INFO", USB_CdcRxBuffer_FS, USB_CDC_RX_CNT))
+        {
+            sprintf(USB_CdcTxBuffer_FS, "[ System Infomation ]\r\n");
+            User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+
+            BootMessagePrint();
+            GetClockSourcePrint();
         }
 
         memset(USB_CdcRxBuffer_FS, 0, USB_CdcRxBuffer_FS_cnt);
-        USB_CdcRxBuffer_FS_cnt = 0;
+        USB_CdcRxBuffer_FS_cnt = NULL;
     }
 }
 /* USER CODE END 1 */

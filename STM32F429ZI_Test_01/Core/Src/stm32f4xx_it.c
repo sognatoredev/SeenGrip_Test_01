@@ -58,7 +58,6 @@
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim1;
-extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 /* USER CODE BEGIN EV */
@@ -246,20 +245,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA2 stream2 global interrupt.
-  */
-void DMA2_Stream2_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
-
-  /* USER CODE END DMA2_Stream2_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_rx);
-  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
-
-  /* USER CODE END DMA2_Stream2_IRQn 1 */
-}
-
-/**
   * @brief This function handles USB On The Go FS global interrupt.
   */
 void OTG_FS_IRQHandler(void)
@@ -287,6 +272,34 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   TIM1_CNT_1++;
   TIM1_CNT_2++;
+}
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(huart);
+  UNUSED(Size);
+
+  Uart_Rx_IdlelineSize = Size;
+
+  // if (huart->Instance == USART1)
+  // {
+  //   if(HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *) uart1_rx_buffer, UART_RX_BUFFER_MAX_SIZE) != HAL_OK)
+	// 	{
+	// 		// set an error flag, poll for flag in main loop, and call HAL_UARTEx_ReceiveToIdle_DMA again.
+	// 		return;
+	// 	}
+	// 	__HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  // }
+  if (huart->Instance == USART2)
+  {
+    if(HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_buffer, UART_RX_BUFFER_MAX_SIZE) != HAL_OK)
+		{
+			// set an error flag, poll for flag in main loop, and call HAL_UARTEx_ReceiveToIdle_DMA again.
+			return;
+		}
+		__HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+  }
 }
 
 /* USER CODE END 1 */
