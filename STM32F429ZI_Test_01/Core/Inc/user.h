@@ -92,6 +92,9 @@ extern uint32_t TIM1_CNT_2;
 extern uint8_t USB_CdcRxBuffer_FS[];
 extern uint8_t USB_CdcTxBuffer_FS[];
 
+extern uint32_t USB_CdcRxBuffer_FS_cnt;
+#define USB_CDC_RX_CNT      (USB_CdcRxBuffer_FS_cnt - 2)
+
 extern uint8_t User_Str[];
 
 /* USER CODE END Private defines */

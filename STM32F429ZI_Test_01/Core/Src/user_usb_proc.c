@@ -68,6 +68,32 @@ void USB_CDC_Proc (void)
     }
     #endif
 }
+
+void USB_CDC_RX_Proc(void)
+{
+    if (USB_CdcRxBuffer_FS_cnt != NULL)
+    {
+        if (!strncmp("RXBUF ALL PRINT", USB_CdcRxBuffer_FS, USB_CDC_RX_CNT))
+        {
+            sprintf(USB_CdcTxBuffer_FS, "USB ALL\r\n");
+            User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        }
+        else if (!strncmp("RXBUF CLEAR", USB_CdcRxBuffer_FS, USB_CDC_RX_CNT))
+        {
+            sprintf(USB_CdcTxBuffer_FS, "USB RX Buffer Clear\r\n");
+            User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        }
+        else if (!strncmp("SYSTEM RESET", USB_CdcRxBuffer_FS, USB_CDC_RX_CNT))
+        {
+            sprintf(USB_CdcTxBuffer_FS, "SYSTEM RESET\r\n");
+            User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+            HAL_NVIC_SystemReset();
+        }
+
+        memset(USB_CdcRxBuffer_FS, 0, USB_CdcRxBuffer_FS_cnt);
+        USB_CdcRxBuffer_FS_cnt = 0;
+    }
+}
 /* USER CODE END 1 */
 
 /* USER CODE BEGIN 2 */

@@ -29,6 +29,7 @@ extern "C" {
 
 /* USER CODE BEGIN Prototypes */
 extern void USB_CDC_Proc (void);
+extern void USB_CDC_RX_Proc(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

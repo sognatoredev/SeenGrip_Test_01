@@ -39,6 +39,8 @@ uint32_t TIM1_CNT_2 = 0;
 uint8_t USB_CdcRxBuffer_FS[CDC_RXDATA_SIZE] = { 0 };
 uint8_t USB_CdcTxBuffer_FS[CDC_TXDATA_SIZE] = { 0 };
 
+uint32_t USB_CdcRxBuffer_FS_cnt = 0;
+
 #define USER_STR_SIZE           1024
 
 uint8_t User_Str[USER_STR_SIZE] = { 0 };

@@ -110,6 +110,7 @@ int main(void)
   {
     GPIO_Proc();
     USB_CDC_Proc();
+    USB_CDC_RX_Proc();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
