@@ -107,7 +107,8 @@ void GetClockSourcePrint (void)
 
 void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength)
 {
-    while(CDC_Transmit_FS((uint8_t *) pdata, datalength) == USBD_BUSY);
+    // while(CDC_Transmit_FS((uint8_t *) pdata, datalength) == USBD_BUSY);
+    CDC_Transmit_FS((uint8_t *) pdata, datalength);
 }
 
 /*******************************************************************************

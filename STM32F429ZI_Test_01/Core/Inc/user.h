@@ -91,11 +91,11 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 extern uint32_t TIM1_CNT_1;
 extern uint32_t TIM1_CNT_2;
 
-#define CDC_RXDATA_SIZE             256
-#define CDC_TXDATA_SIZE             256
+#define CDC_RXDATA_SIZE             1024
+#define CDC_TXDATA_SIZE             1024
 
-#define UART_RX_BUFFER_MAX_SIZE     30
-#define UART_TX_BUFFER_MAX_SIZE     30
+#define UART_RX_BUFFER_MAX_SIZE     1024
+#define UART_TX_BUFFER_MAX_SIZE     1024
 
 extern uint8_t USB_CdcRxBuffer_FS[];
 extern uint8_t USB_CdcTxBuffer_FS[];
