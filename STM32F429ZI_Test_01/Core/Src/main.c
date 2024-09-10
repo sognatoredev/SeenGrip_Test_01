@@ -102,6 +102,8 @@ int main(void)
   // __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_TC);
+  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
+  __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_TC);
 
   HAL_TIM_Base_Start_IT(&htim1);
   

@@ -48,6 +48,9 @@ uint8_t uart1_tx_buffer[UART_TX_BUFFER_MAX_SIZE] = { 0 };
 uint8_t uart2_rx_buffer[UART_RX_BUFFER_MAX_SIZE] = { 0 };
 uint8_t uart2_tx_buffer[UART_TX_BUFFER_MAX_SIZE] = { 0 };
 
+uint8_t uart1_rx_flag = 0;
+uint8_t uart2_rx_flag = 0;
+
 uint16_t Uart_Rx_IdlelineSize = 0;
 uint8_t Uart_Rx_IdlelineIT_Flag = 0x00;
 

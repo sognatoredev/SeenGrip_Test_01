@@ -61,6 +61,7 @@ extern TIM_HandleTypeDef htim1;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
+extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 
@@ -247,6 +248,20 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART2 global interrupt.
   */
 void USART2_IRQHandler(void)
@@ -317,13 +332,18 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
   if (huart->Instance == USART1)
   {
+    uart1_rx_flag = 1;
     // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *) uart1_rx_buffer, UART_RX_BUFFER_MAX_SIZE);
 
 		// __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
 		// __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_TC);
+    __HAL_UART_CLEAR_IDLEFLAG(huart);
+    // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
+    ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
   }
   if (huart->Instance == USART2)
   {
+    uart2_rx_flag = 1;
     // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_buffer, UART_RX_BUFFER_MAX_SIZE);
 
 		// __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);

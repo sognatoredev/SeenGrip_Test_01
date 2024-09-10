@@ -1,1 +1,1 @@
-../Core/Src/user_uart_proc.c:24:6:UART1_RX_Proc	8	static
+../Core/Src/user_uart_proc.c:45:6:UART1_RX_Proc	8	static
