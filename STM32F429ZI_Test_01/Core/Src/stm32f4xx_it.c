@@ -58,11 +58,12 @@
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim1;
-extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
+extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
-
+extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -246,17 +247,17 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA2 stream2 global interrupt.
+  * @brief This function handles USART2 global interrupt.
   */
-void DMA2_Stream2_IRQHandler(void)
+void USART2_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+  /* USER CODE BEGIN USART2_IRQn 0 */
 
-  /* USER CODE END DMA2_Stream2_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_rx);
-  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
 
-  /* USER CODE END DMA2_Stream2_IRQn 1 */
+  /* USER CODE END USART2_IRQn 1 */
 }
 
 /**
@@ -287,6 +288,91 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   TIM1_CNT_1++;
   TIM1_CNT_2++;
+}
+
+/**
+  * @brief  Rx Transfer completed callbacks.
+  * @param  huart  Pointer to a UART_HandleTypeDef structure that contains
+  *                the configuration information for the specified UART module.
+  * @retval None
+  */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  /* Prevent unused argument(s) compilation warning */
+  if (huart->Instance == USART2)
+  {
+    uart2_rx_flag = 1;
+
+    uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
+    
+    HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+  }
+  else if (huart->Instance == USART3)
+  {
+    uart3_rx_flag = 1;
+
+    uart3_rx_index = (UART_RXDATA_MAX - hdma_usart3_rx.Instance->NDTR);
+    
+    HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+  }
+    if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
+  {
+    __HAL_UART_CLEAR_OREFLAG(&huart2);
+    
+    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+    // HAL_UART_DeInit(&huart2);
+    // HAL_UART_Init(&huart2);
+    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+  }
+  else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_ORE))
+  {
+    __HAL_UART_CLEAR_OREFLAG(&huart3);
+    
+    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+  }
+  else if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_FE))
+  {
+    __HAL_UART_CLEAR_FEFLAG(&huart2);
+  }
+  else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_FE))
+  {
+    __HAL_UART_CLEAR_FEFLAG(&huart3);
+  }
+}
+
+/**
+  * @brief  UART error callbacks.
+  * @param  huart  Pointer to a UART_HandleTypeDef structure that contains
+  *                the configuration information for the specified UART module.
+  * @retval None
+  */
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
+  {
+    __HAL_UART_CLEAR_OREFLAG(&huart2);
+    
+    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+    // HAL_UART_DeInit(&huart2);
+    // HAL_UART_Init(&huart2);
+    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+  }
+  else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_ORE))
+  {
+    __HAL_UART_CLEAR_OREFLAG(&huart3);
+    
+    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+  }
+  else if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_FE))
+  {
+    __HAL_UART_CLEAR_FEFLAG(&huart2);
+  }
+  else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_FE))
+  {
+    __HAL_UART_CLEAR_FEFLAG(&huart3);
+  }
 }
 
 /* USER CODE END 1 */

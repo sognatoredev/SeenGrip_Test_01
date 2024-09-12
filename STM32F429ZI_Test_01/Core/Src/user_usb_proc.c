@@ -28,15 +28,15 @@ void USB_CDC_Proc (void)
     {
         TIM1_CNT_2 = 0;
 
-        sprintf(USB_CdcTxBuffer_FS, "USB CDC TEST %d\r\n", count);
-        User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        // sprintf(USB_CdcTxBuffer_FS, "USB CDC TEST %d\r\n", count);
+        // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
 
-        sprintf(USB_CdcTxBuffer_FS, "USB CDC Transmit OK.\r\n");
-        User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        // sprintf(USB_CdcTxBuffer_FS, "USB CDC Transmit OK.\r\n");
+        // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
         
-        memset(USB_CdcTxBuffer_FS, 0, strlen(USB_CdcTxBuffer_FS));
+        // memset(USB_CdcTxBuffer_FS, 0, strlen(USB_CdcTxBuffer_FS));
         
-        count++;
+        // count++;
     }
     #else
     if (TIM1_CNT_2 >= 1000)

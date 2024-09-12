@@ -48,6 +48,13 @@
 
 /* USER CODE BEGIN PV */
 
+extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
+
+int _write(int file, char *ptr, int len){
+    // CDC_Transmit_FS(ptr, len);
+    User_CDC_Transmit_FS(ptr, len);
+    return (len);
+}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,16 +99,18 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_TIM1_Init();
-  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  HAL_Delay(5000);
+  HAL_Delay(2000);
   BootMessagePrint();
   GetClockSourcePrint();
 
   HAL_TIM_Base_Start_IT(&htim1);
+  HAL_UART_Receive_DMA(&huart2, (uint8_t *) uart2_rx_buf, UART_RXDATA_MAX);
+  HAL_UART_Receive_DMA(&huart3, (uint8_t *) uart3_rx_buf, UART_RXDATA_MAX);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -111,6 +120,7 @@ int main(void)
     GPIO_Proc();
     USB_CDC_Proc();
     USB_CDC_RX_Proc();
+    UART_RX_Proc();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

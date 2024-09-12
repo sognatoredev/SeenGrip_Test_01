@@ -33,8 +33,9 @@
 uint32_t TIM1_CNT_1 = 0;
 uint32_t TIM1_CNT_2 = 0;
 
-#define CDC_RXDATA_SIZE         256
-#define CDC_TXDATA_SIZE         256
+#define CDC_RXDATA_SIZE                     256
+#define CDC_TXDATA_SIZE                     256
+
 
 uint8_t USB_CdcRxBuffer_FS[CDC_RXDATA_SIZE] = { 0 };
 uint8_t USB_CdcTxBuffer_FS[CDC_TXDATA_SIZE] = { 0 };
@@ -44,6 +45,21 @@ uint32_t USB_CdcRxBuffer_FS_cnt = 0;
 #define USER_STR_SIZE           1024
 
 uint8_t User_Str[USER_STR_SIZE] = { 0 };
+
+uint8_t uart2_rx_buf[UART_RXDATA_MAX] = { 0 };
+uint8_t uart2_tx_buf[UART_TXDATA_MAX] = { 0 };
+uint8_t uart3_rx_buf[UART_RXDATA_MAX] = { 0 };
+uint8_t uart3_tx_buf[UART_TXDATA_MAX] = { 0 };
+
+uint16_t uart2_rx_index = 0;
+uint16_t uart2_tx_index = 0;
+
+uint16_t uart3_rx_index = 0;
+uint16_t uart3_tx_index = 0;
+
+uint8_t uart2_rx_flag = 0;
+uint8_t uart3_rx_flag = 0;
+
 
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere
