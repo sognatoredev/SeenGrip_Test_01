@@ -297,6 +297,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
     return USBD_FAIL;
   }
 
+  #if 0
   while (hcdc->TxState != 0)
   {
     if ((HAL_GetTick() - startTick) > TIMEOUT_VALUE)
@@ -304,9 +305,25 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
       return USBD_FAIL;
     }
   }
+  #else
+  // while (hcdc->TxState != 0)
+  // {
+  //   if (TIM8_CNT_1 >= 10)
+  //   {
+  //     TIM8_CNT_1 = 0;
+
+  //     return USBD_FAIL;
+  //   }
+  // }
+  #endif
 
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
   result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
+
+  #if 1
+  while (result == USBD_BUSY)
+  #else
+  #endif
   /* USER CODE END 7 */
   return result;
 }

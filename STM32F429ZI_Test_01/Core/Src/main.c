@@ -96,7 +96,11 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_DEVICE_Init();
   MX_USART1_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
+  
+
   HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_buffer, UART_RX_BUFFER_MAX_SIZE);
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *) uart1_rx_buffer, UART_RX_BUFFER_MAX_SIZE);
   // __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
@@ -106,11 +110,13 @@ int main(void)
   __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_TC);
 
   HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_Base_Start_IT(&htim8);
   
-  HAL_Delay(5000);
+  HAL_Delay(50);
+  //HAL_Delay(3000);
   BootMessagePrint();
   GetClockSourcePrint();
- 
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -121,6 +127,7 @@ int main(void)
     USB_CDC_Proc();
     USB_CDC_RX_Proc();
     UART1_RX_Proc();
+    // USB_CDC_Statecheck();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

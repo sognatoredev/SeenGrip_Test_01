@@ -58,6 +58,8 @@
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim8;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
@@ -248,6 +250,20 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM2 global interrupt.
+  */
+void TIM2_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+
+  /* USER CODE END TIM2_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE BEGIN TIM2_IRQn 1 */
+
+  /* USER CODE END TIM2_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART1 global interrupt.
   */
 void USART1_IRQHandler(void)
@@ -273,6 +289,20 @@ void USART2_IRQHandler(void)
   /* USER CODE BEGIN USART2_IRQn 1 */
 
   /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM8 update interrupt and TIM13 global interrupt.
+  */
+void TIM8_UP_TIM13_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 0 */
+
+  /* USER CODE END TIM8_UP_TIM13_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim8);
+  /* USER CODE BEGIN TIM8_UP_TIM13_IRQn 1 */
+
+  /* USER CODE END TIM8_UP_TIM13_IRQn 1 */
 }
 
 /**
@@ -315,8 +345,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* Prevent unused argument(s) compilation warning */
   UNUSED(htim);
 
-  TIM1_CNT_1++;
-  TIM1_CNT_2++;
+  if (htim->Instance == TIM1) // 1ms
+  {
+    TIM1_CNT_1++;
+    TIM1_CNT_2++;
+  }
+  else if (htim->Instance == TIM2) // 100us
+  {
+    TIM2_CNT_1++;
+    TIM2_CNT_2++;
+  }
+  else if (htim->Instance == TIM8)
+  {
+    TIM8_CNT_1++;
+    TIM8_CNT_2++;
+  }
 }
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
@@ -326,13 +369,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   UNUSED(Size);
   uint16_t tmp_cnt = 0;
 
-  Uart_Rx_IdlelineSize = Size;
+  // Uart_Rx_IdlelineSize = Size;
 
   Uart_Rx_IdlelineIT_Flag = 0x01;
 
   if (huart->Instance == USART1)
   {
+    Uart1_Rx_IdlelineSize = Size;
     uart1_rx_flag = 1;
+    
     // HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *) uart1_rx_buffer, UART_RX_BUFFER_MAX_SIZE);
 
 		// __HAL_DMA_DISABLE_IT(&hdma_usart1_rx, DMA_IT_HT);
@@ -343,7 +388,9 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
   if (huart->Instance == USART2)
   {
+    Uart2_Rx_IdlelineSize = Size;
     uart2_rx_flag = 1;
+    
     // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_buffer, UART_RX_BUFFER_MAX_SIZE);
 
 		// __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);

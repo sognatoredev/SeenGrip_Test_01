@@ -29,6 +29,7 @@ extern "C" {
 
 /* USER CODE BEGIN Prototypes */
 extern void UART1_RX_Proc (void);
+extern uint8_t USB_CDC_Statecheck (void);
 
 /* USER CODE END Prototypes */
 

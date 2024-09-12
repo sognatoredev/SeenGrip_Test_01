@@ -30,8 +30,14 @@
 /*---- data declarations -----------------------------------------------------*/
 
 /* Timer ch 1 count var. */
-uint32_t TIM1_CNT_1 = 0;
-uint32_t TIM1_CNT_2 = 0;
+volatile uint32_t TIM1_CNT_1 = 0;
+volatile uint32_t TIM1_CNT_2 = 0;
+
+volatile uint32_t TIM2_CNT_1 = 0;
+volatile uint32_t TIM2_CNT_2 = 0;
+
+volatile uint32_t TIM8_CNT_1 = 0;
+volatile uint32_t TIM8_CNT_2 = 0;
 
 #define USER_STR_SIZE               1024
 
@@ -51,7 +57,8 @@ uint8_t uart2_tx_buffer[UART_TX_BUFFER_MAX_SIZE] = { 0 };
 uint8_t uart1_rx_flag = 0;
 uint8_t uart2_rx_flag = 0;
 
-uint16_t Uart_Rx_IdlelineSize = 0;
+uint16_t Uart1_Rx_IdlelineSize = 0;
+uint16_t Uart2_Rx_IdlelineSize = 0;
 uint8_t Uart_Rx_IdlelineIT_Flag = 0x00;
 
 

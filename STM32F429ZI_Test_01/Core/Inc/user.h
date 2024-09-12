@@ -88,8 +88,14 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 #define LED_ALL_PORT        GPIOB
 #define LED_ALL_PIN         GPIO_PIN_14 | GPIO_PIN_0 | GPIO_PIN_7
 
-extern uint32_t TIM1_CNT_1;
-extern uint32_t TIM1_CNT_2;
+extern volatile uint32_t TIM1_CNT_1;
+extern volatile uint32_t TIM1_CNT_2;
+
+extern volatile uint32_t TIM2_CNT_1;
+extern volatile uint32_t TIM2_CNT_2;
+
+extern volatile uint32_t TIM8_CNT_1;
+extern volatile uint32_t TIM8_CNT_2;
 
 #define CDC_RXDATA_SIZE             1024
 #define CDC_TXDATA_SIZE             1024
@@ -115,7 +121,8 @@ extern uint8_t uart2_tx_buffer[];
 extern uint8_t uart1_rx_flag;
 extern uint8_t uart2_rx_flag;
 
-extern uint16_t Uart_Rx_IdlelineSize;
+extern uint16_t Uart1_Rx_IdlelineSize;
+extern uint16_t Uart2_Rx_IdlelineSize;
 extern uint8_t Uart_Rx_IdlelineIT_Flag;
 
 /* USER CODE END Private defines */
