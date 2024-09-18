@@ -306,18 +306,18 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
     }
   }
   #else
-  // if (hcdc == NULL)
-  // {
-  //   return USBD_FAIL;
-  // }
+  if (hcdc == NULL)
+  {
+    return USBD_FAIL;
+  }
 
-  // while (hcdc->TxState != 0)
-  // {
-  //   if ((HAL_GetTick() - startTick) > TIMEOUT_VALUE)
-  //   {
-  //     return USBD_FAIL;
-  //   }
-  // }
+  while (hcdc->TxState != 0)
+  {
+    // if ((HAL_GetTick() - startTick) > TIMEOUT_VALUE)
+    // {
+      return USBD_BUSY;
+    // }
+  }
   #endif
   
 
