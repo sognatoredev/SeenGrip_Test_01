@@ -29,7 +29,7 @@
 /* USER CODE BEGIN TD */
 uint8_t queData[2400] = { 0 };
 uint16_t queDataNum = 0;
-
+uint8_t Rx_Start_flag = 0;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -315,6 +315,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+  if (!Rx_Start_flag)
+  {
+    Rx_Start_flag = 1;
+    debug_buf_init();
+  }
+
   /* Prevent unused argument(s) compilation warning */
   if (huart->Instance == USART2)
   {

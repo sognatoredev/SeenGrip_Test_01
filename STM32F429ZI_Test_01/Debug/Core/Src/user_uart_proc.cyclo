@@ -1,4 +1,4 @@
 ../Core/Src/user_uart_proc.c:36:6:debug_buf_init	1
 ../Core/Src/user_uart_proc.c:44:6:debug_buf_write	3
 ../Core/Src/user_uart_proc.c:73:6:debug_buf_read	3
-../Core/Src/user_uart_proc.c:90:6:UART_RX_Proc	3
+../Core/Src/user_uart_proc.c:87:6:UART_RX_Proc	3

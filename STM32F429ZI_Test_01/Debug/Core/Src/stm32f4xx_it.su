@@ -14,4 +14,4 @@
 ../Core/Src/stm32f4xx_it.c:269:6:OTG_FS_IRQHandler	8	static
 ../Core/Src/stm32f4xx_it.c:287:6:HAL_TIM_PeriodElapsedCallback	24	static
 ../Core/Src/stm32f4xx_it.c:316:6:HAL_UART_RxCpltCallback	32	static
-../Core/Src/stm32f4xx_it.c:391:6:HAL_UART_ErrorCallback	32	static
+../Core/Src/stm32f4xx_it.c:397:6:HAL_UART_ErrorCallback	32	static
