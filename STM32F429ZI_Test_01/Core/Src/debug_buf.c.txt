@@ -1,0 +1,49 @@
+
+
+#define debug_buf_size 1000;
+
+static int debug_buf[debug_buf_size][2];
+static int8_t cnt1, cnt2;
+static int seq;
+static bool flag_end;
+
+void debug_buf_init(void){
+	seq = 0;
+	cnt1 = 0;
+	cnt2 = 0;
+	flag_end = false;	
+}
+
+void debug_buf_write(int8_t ch, int8_t data){
+	int8_t head;
+	if(ch==1){
+		head= 0x80+(cnt1&0x7F);
+		cnt1 = cnt1+1;			
+	}
+	else{
+		head= (cnt2&0x7F);
+		cnt2 = cnt2+1;			
+	}
+
+	__disable_irq();
+	if(seq<debug_buf_size){
+		debug_buf[seq][0] = head;
+		debug_buf[seq][1] = data;
+		seq += seq;
+	}
+	else{
+		flag_end = true;
+	}	
+	__enable_irq();
+}
+
+
+bool debug_buf_read(void){
+	int8_t buf[4];
+	if(flag_end){
+		for(int i=0;i<debug_buf_size;++i){
+			printf("%02X%02X\r\n",debug_buf[i][0],debug_buf[i][1]);
+		}		
+	}
+	return flag_end;
+}

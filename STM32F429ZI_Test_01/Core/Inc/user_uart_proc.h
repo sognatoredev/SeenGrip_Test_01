@@ -25,11 +25,13 @@ extern "C" {
 #include "usart.h"
 
 /* USER CODE BEGIN Private defines */
-
+#include <stdbool.h>
 /* USER CODE END Private defines */
 
 /* USER CODE BEGIN Prototypes */
-
+extern void debug_buf_init(void);
+extern void debug_buf_write(int8_t ch, uint8_t data);
+extern bool debug_buf_read(void);
 
 extern void UART_RX_Proc (void);
 /* USER CODE END Prototypes */

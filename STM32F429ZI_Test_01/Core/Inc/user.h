@@ -26,6 +26,7 @@ extern "C" {
 #include <string.h>
 #include "usbd_def.h"
 #include "user_uart_proc.h"
+// #include "debug_buf.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -87,8 +88,8 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 #define LED_ALL_PORT        GPIOB
 #define LED_ALL_PIN         GPIO_PIN_14 | GPIO_PIN_0 | GPIO_PIN_7
 
-#define UART_RXDATA_MAX                     2400
-#define UART_TXDATA_MAX                     2400
+#define UART_RXDATA_MAX                     1
+#define UART_TXDATA_MAX                     1
 
 extern uint32_t TIM1_CNT_1;
 extern uint32_t TIM1_CNT_2;
@@ -114,6 +115,8 @@ extern uint16_t uart3_tx_index;
 
 extern uint8_t uart2_rx_flag;
 extern uint8_t uart3_rx_flag;
+
+extern uint16_t uart2_rxcpltcallback_cnt;
 
 /* USER CODE END Private defines */
 

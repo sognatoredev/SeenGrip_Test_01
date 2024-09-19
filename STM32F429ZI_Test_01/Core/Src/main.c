@@ -105,11 +105,13 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
+  debug_buf_init();
   Q_Init(&USB_TX_Q, (uint8_t *) USB_TX_Data, 2400);
+  
 
   HAL_Delay(500);
-  BootMessagePrint();
-  GetClockSourcePrint();
+  // BootMessagePrint();
+  // GetClockSourcePrint();
 
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_UART_Receive_DMA(&huart2, (uint8_t *) uart2_rx_buf, UART_RXDATA_MAX);

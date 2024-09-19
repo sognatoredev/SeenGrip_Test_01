@@ -61,7 +61,7 @@ uint16_t uart3_tx_index = 0;
 uint8_t uart2_rx_flag = 0;
 uint8_t uart3_rx_flag = 0;
 
-
+uint16_t uart2_rxcpltcallback_cnt = 0;
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere
  *******************************************************************************/

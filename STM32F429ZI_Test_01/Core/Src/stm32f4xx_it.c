@@ -29,6 +29,7 @@
 /* USER CODE BEGIN TD */
 uint8_t queData[2400] = { 0 };
 uint16_t queDataNum = 0;
+
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -321,11 +322,17 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     // if (TIM1_CNT_3 >= 1000)
     // {
     //   TIM1_CNT_3 = 0;
-      uart2_rx_flag = 1;
 
-      uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
-      
-      HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+    // uart2_rxcpltcallback_cnt++;
+    debug_buf_write(1, USART2->DR);
+
+    // uart2_rx_flag = 1;
+
+    uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
+
+    HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+    
+    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
     // }
     #else
       // uart2_rx_flag = 1;
@@ -338,13 +345,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
   else if (huart->Instance == USART3)
   {
-    uart3_rx_flag = 1;
+    // uart3_rx_flag = 1;
+    // uart2_rxcpltcallback_cnt++;
+    debug_buf_write(2, USART3->DR);
+
+    // uart2_rx_flag = 1;
 
     uart3_rx_index = (UART_RXDATA_MAX - hdma_usart3_rx.Instance->NDTR);
     
     HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
   }
-    if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
+
+  if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
   {
     __HAL_UART_CLEAR_OREFLAG(&huart2);
     
