@@ -27,7 +27,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-
+uint8_t queData[2400] = { 0 };
+uint16_t queDataNum = 0;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -64,6 +65,7 @@ extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
+extern uint8_t CDC_Transmit_Is_Busy(void);
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -285,9 +287,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(htim);
+  uint16_t num = 0;
+  
+  if ((num = Q_NumContents(&USB_TX_Q)) > 0 )
+  {
+    if (CDC_Transmit_Is_Busy() != USBD_BUSY)
+    {
+      queDataNum += num;
+
+      Q_Read(&USB_TX_Q, (uint8_t *)queData, num);
+
+      CDC_Transmit_FS(queData, num);
+    }
+  }
 
   TIM1_CNT_1++;
   TIM1_CNT_2++;
+  TIM1_CNT_3++;
 }
 
 /**
@@ -301,11 +317,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   /* Prevent unused argument(s) compilation warning */
   if (huart->Instance == USART2)
   {
-    uart2_rx_flag = 1;
+    #if 1
+    // if (TIM1_CNT_3 >= 1000)
+    // {
+    //   TIM1_CNT_3 = 0;
+      uart2_rx_flag = 1;
 
-    uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
-    
-    HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+      uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
+      
+      HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+    // }
+    #else
+      // uart2_rx_flag = 1;
+
+      // uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
+      
+      // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+
+    #endif
   }
   else if (huart->Instance == USART3)
   {

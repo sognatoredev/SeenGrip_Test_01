@@ -1,1 +1,1 @@
-../Core/Src/user_uart_proc.c:25:6:UART_RX_Proc	16	static
+../Core/Src/user_uart_proc.c:26:6:UART_RX_Proc	24	static

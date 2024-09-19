@@ -23,50 +23,63 @@ static uint16_t count = 0;
 /* USER CODE BEGIN 1 */
 void USB_CDC_Proc (void)
 {
-    #if 1
     if (TIM1_CNT_2 >= 1000)
     {
         TIM1_CNT_2 = 0;
 
-        // sprintf(USB_CdcTxBuffer_FS, "USB CDC TEST %d\r\n", count);
-        // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        // printf("USB CDC TEST %d\r\n", count);
+        // printf("USB CDC Transmit OK.\r\n");
 
-        // sprintf(USB_CdcTxBuffer_FS, "USB CDC Transmit OK.\r\n");
-        // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
-        
-        // memset(USB_CdcTxBuffer_FS, 0, strlen(USB_CdcTxBuffer_FS));
-        
-        // count++;
+        count++;
     }
-    #else
-    if (TIM1_CNT_2 >= 1000)
-    {
-        TIM1_CNT_2 = 0;
+    
+    // #if 1
+    // if (TIM1_CNT_2 >= 1000)
+    // {
+    //     TIM1_CNT_2 = 0;
 
-        sprintf(USB_CdcTxBuffer_FS, "-------------------------------------------\r\n");
-        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     // sprintf(USB_CdcTxBuffer_FS, "USB CDC TEST %d\r\n", count);
+    //     // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     printf("USB CDC TEST %d\r\n", count);
+    //     printf("USB CDC Transmit OK.\r\n");
+    //     // sprintf(USB_CdcTxBuffer_FS, "USB CDC Transmit OK.\r\n");
+    //     // User_CDC_Transmit_FS((uint8_t *) USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+        
+    //     // memset(USB_CdcTxBuffer_FS, 0, strlen(USB_CdcTxBuffer_FS));
+        
+    //     count++;
+    // }
+    // #else
+    // if (TIM1_CNT_2 >= 1000)
+    // {
+    //     TIM1_CNT_2 = 0;
+
+    //     sprintf(USB_CdcTxBuffer_FS, "-------------------------------------------\r\n");
+    //     CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
 
 
-        sprintf(USB_CdcTxBuffer_FS, " Project Name        : %s\r\n", PROJECT_NAME );
-        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     sprintf(USB_CdcTxBuffer_FS, " Project Name        : %s\r\n", PROJECT_NAME );
+    //     CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
 
 
-        sprintf(USB_CdcTxBuffer_FS, " - HW VERSION        : %s\r\n", STR_HW_VER );
-        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     sprintf(USB_CdcTxBuffer_FS, " - HW VERSION        : %s\r\n", STR_HW_VER );
+    //     CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
 
 
-        sprintf(USB_CdcTxBuffer_FS, " - FW VERSION        : %s\r\n", STR_FW_VER );
-        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     sprintf(USB_CdcTxBuffer_FS, " - FW VERSION        : %s\r\n", STR_FW_VER );
+    //     CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
 
 
-        sprintf(USB_CdcTxBuffer_FS, " - BUILD TIME        : %s, %s\r\n", __DATE__, __TIME__ );
-        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    //     sprintf(USB_CdcTxBuffer_FS, " - BUILD TIME        : %s, %s\r\n", __DATE__, __TIME__ );
+    //     CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
 
 
-        sprintf(USB_CdcTxBuffer_FS, "-------------------------------------------\r\n" );
-        CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
-    }
-    #endif
+    //     sprintf(USB_CdcTxBuffer_FS, "-------------------------------------------\r\n" );
+    //     CDC_Transmit_FS(USB_CdcTxBuffer_FS, strlen(USB_CdcTxBuffer_FS));
+    // }
+    // #endif
 }
 
 void USB_CDC_RX_Proc(void)

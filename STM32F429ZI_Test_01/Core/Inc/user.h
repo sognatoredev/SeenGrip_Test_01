@@ -87,11 +87,12 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 #define LED_ALL_PORT        GPIOB
 #define LED_ALL_PIN         GPIO_PIN_14 | GPIO_PIN_0 | GPIO_PIN_7
 
-#define UART_RXDATA_MAX                     4096
-#define UART_TXDATA_MAX                     4096
+#define UART_RXDATA_MAX                     2400
+#define UART_TXDATA_MAX                     2400
 
 extern uint32_t TIM1_CNT_1;
 extern uint32_t TIM1_CNT_2;
+extern uint32_t TIM1_CNT_3;
 
 extern uint8_t USB_CdcRxBuffer_FS[];
 extern uint8_t USB_CdcTxBuffer_FS[];

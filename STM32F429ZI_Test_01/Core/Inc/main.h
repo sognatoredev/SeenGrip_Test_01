@@ -33,11 +33,12 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "user.h"
+#include "queue.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+extern Q_queue_t USB_TX_Q;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

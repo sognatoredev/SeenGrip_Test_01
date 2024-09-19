@@ -32,6 +32,7 @@
 /* Timer ch 1 count var. */
 uint32_t TIM1_CNT_1 = 0;
 uint32_t TIM1_CNT_2 = 0;
+uint32_t TIM1_CNT_3 = 0;
 
 #define CDC_RXDATA_SIZE                     256
 #define CDC_TXDATA_SIZE                     256
@@ -116,7 +117,9 @@ void GetClockSourcePrint (void)
 
 void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength)
 {
-    while(CDC_Transmit_FS((uint8_t *) pdata, datalength) == USBD_BUSY);
+    // while(CDC_Transmit_FS((uint8_t *) pdata, datalength) == USBD_BUSY);
+    CDC_Transmit_FS((uint8_t *) pdata, datalength);
+    
 }
 
 /*******************************************************************************

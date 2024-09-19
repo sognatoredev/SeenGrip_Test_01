@@ -26,12 +26,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+uint8_t USB_TX_Data[2400] = { 0 };
+Q_queue_t USB_TX_Q;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,7 +53,8 @@ extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 int _write(int file, char *ptr, int len){
     // CDC_Transmit_FS(ptr, len);
-    User_CDC_Transmit_FS(ptr, len);
+    Q_Write(&USB_TX_Q, ptr, len);
+    // User_CDC_Transmit_FS(ptr, len);
     return (len);
 }
 /* USER CODE END PV */
@@ -103,7 +105,9 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-  HAL_Delay(2000);
+  Q_Init(&USB_TX_Q, (uint8_t *) USB_TX_Data, 2400);
+
+  HAL_Delay(500);
   BootMessagePrint();
   GetClockSourcePrint();
 

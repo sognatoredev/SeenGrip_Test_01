@@ -33,7 +33,7 @@ Core/Src/usart.o: ../Core/Src/usart.c ../Core/Inc/usart.h \
  ../Core/Inc/user.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
  ../USB_DEVICE/Target/usbd_conf.h ../Core/Inc/main.h \
- ../Core/Inc/user_uart_proc.h ../Core/Inc/usart.h
+ ../Core/Inc/user_uart_proc.h ../Core/Inc/usart.h ../Core/Inc/queue.h
 ../Core/Inc/usart.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -73,3 +73,4 @@ Core/Src/usart.o: ../Core/Src/usart.c ../Core/Inc/usart.h \
 ../Core/Inc/main.h:
 ../Core/Inc/user_uart_proc.h:
 ../Core/Inc/usart.h:
+../Core/Inc/queue.h:

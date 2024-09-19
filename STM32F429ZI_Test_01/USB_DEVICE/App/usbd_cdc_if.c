@@ -49,7 +49,7 @@
   */
 
 /* USER CODE BEGIN PRIVATE_TYPES */
-
+extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE END PRIVATE_TYPES */
 
 /**
@@ -292,35 +292,32 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
   uint32_t TIMEOUT_VALUE = 1U;
 
   USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
-  #if 0
+  #if 1
   if (hcdc == NULL)
   {
     return USBD_FAIL;
   }
 
-  while (hcdc->TxState != 0)
+  if (hcdc->TxState != 0)
   {
-    if ((HAL_GetTick() - startTick) > TIMEOUT_VALUE)
-    {
-      return USBD_FAIL;
-    }
+      return USBD_BUSY;
   }
   #else
-  if (hcdc == NULL)
-  {
-    return USBD_FAIL;
-  }
+  // // if (hcdc == NULL)
+  // if (hcdc == NULL)
+  // {
+  //   return USBD_FAIL;
+  // }
 
-  while (hcdc->TxState != 0)
-  {
-    // if ((HAL_GetTick() - startTick) > TIMEOUT_VALUE)
-    // {
-      return USBD_BUSY;
-    // }
-  }
+  // while (hcdc->TxState != 0)
+  // {
+  //   if ((HAL_GetTick() - startTick) > TIMEOUT_VALUE)
+  //   {
+  //       return USBD_BUSY;
+  //   }
+  // }
   #endif
   
-
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);
   result = USBD_CDC_TransmitPacket(&hUsbDeviceFS);
   /* USER CODE END 7 */
@@ -351,7 +348,13 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 }
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
-
+uint8_t CDC_Transmit_Is_Busy(void){
+  USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
+  if (hcdc->TxState != 0)
+    return USBD_BUSY;
+  else
+    return USBD_OK;
+}
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 
 /**

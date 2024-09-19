@@ -1,2 +1,2 @@
 ../Core/Src/user_usb_proc.c:24:6:USB_CDC_Proc	4	static
-../Core/Src/user_usb_proc.c:72:6:USB_CDC_RX_Proc	8	static
+../Core/Src/user_usb_proc.c:85:6:USB_CDC_RX_Proc	8	static

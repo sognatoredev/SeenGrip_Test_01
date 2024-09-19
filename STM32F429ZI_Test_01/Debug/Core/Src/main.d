@@ -33,8 +33,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/user.h ../Core/Inc/main.h \
  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc/usbd_def.h \
  ../USB_DEVICE/Target/usbd_conf.h ../Core/Inc/user_uart_proc.h \
- ../Core/Inc/usart.h ../Core/Inc/dma.h ../Core/Inc/tim.h \
- ../Core/Inc/usart.h ../USB_DEVICE/App/usb_device.h ../Core/Inc/gpio.h
+ ../Core/Inc/usart.h ../Core/Inc/queue.h ../Core/Inc/dma.h \
+ ../Core/Inc/tim.h ../Core/Inc/usart.h ../USB_DEVICE/App/usb_device.h \
+ ../Core/Inc/gpio.h ../Core/Inc/queue.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -73,8 +74,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../USB_DEVICE/Target/usbd_conf.h:
 ../Core/Inc/user_uart_proc.h:
 ../Core/Inc/usart.h:
+../Core/Inc/queue.h:
 ../Core/Inc/dma.h:
 ../Core/Inc/tim.h:
 ../Core/Inc/usart.h:
 ../USB_DEVICE/App/usb_device.h:
 ../Core/Inc/gpio.h:
+../Core/Inc/queue.h:
