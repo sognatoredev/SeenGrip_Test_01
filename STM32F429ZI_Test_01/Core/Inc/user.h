@@ -76,17 +76,25 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
     GPIO_PIN_14
 
 */
+#define UART_TIME_PORT          GPIOG
 
-#define LED_RED_PORT        GPIOB
-#define LED_GREEN_PORT      GPIOB
-#define LED_BLUE_PORT       GPIOB
+#define UART_RX_BUFWR_PIN       GPIO_PIN_5
+#define UART_TX_CPLT_TIME_PIN   GPIO_PIN_6
 
-#define LED_RED_PIN         GPIO_PIN_14
-#define LED_GREEN_PIN       GPIO_PIN_0
-#define LED_BLUE_PIN        GPIO_PIN_7
+#define IOLINK_WAKEUP_PORT      GPIOG
 
-#define LED_ALL_PORT        GPIOB
-#define LED_ALL_PIN         GPIO_PIN_14 | GPIO_PIN_0 | GPIO_PIN_7
+#define IOLINK_WAKEUP_PIN       GPIO_PIN_8
+
+#define LED_RED_PORT            GPIOB
+#define LED_GREEN_PORT          GPIOB
+#define LED_BLUE_PORT           GPIOB
+
+#define LED_RED_PIN             GPIO_PIN_14
+#define LED_GREEN_PIN           GPIO_PIN_0
+#define LED_BLUE_PIN            GPIO_PIN_7
+
+#define LED_ALL_PORT            GPIOB
+#define LED_ALL_PIN             GPIO_PIN_14 | GPIO_PIN_0 | GPIO_PIN_7
 
 #define UART_RXDATA_MAX                     1
 #define UART_TXDATA_MAX                     1

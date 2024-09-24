@@ -62,7 +62,6 @@ extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim1;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
-extern UART_HandleTypeDef huart2;
 /* USER CODE BEGIN EV */
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
@@ -236,6 +235,20 @@ void DMA1_Stream5_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
   */
 void TIM1_UP_TIM10_IRQHandler(void)
@@ -247,20 +260,6 @@ void TIM1_UP_TIM10_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
-}
-
-/**
-  * @brief This function handles USART2 global interrupt.
-  */
-void USART2_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART2_IRQn 0 */
-
-  /* USER CODE END USART2_IRQn 0 */
-  HAL_UART_IRQHandler(&huart2);
-  /* USER CODE BEGIN USART2_IRQn 1 */
-
-  /* USER CODE END USART2_IRQn 1 */
 }
 
 /**
@@ -315,11 +314,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (!Rx_Start_flag)
-  {
-    Rx_Start_flag = 1;
-    debug_buf_init();
-  }
+  // if (!Rx_Start_flag)
+  // {
+  //   Rx_Start_flag = 1;
+  //   debug_buf_init();
+  // }
 
   /* Prevent unused argument(s) compilation warning */
   if (huart->Instance == USART2)
@@ -330,14 +329,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     //   TIM1_CNT_3 = 0;
 
     // uart2_rxcpltcallback_cnt++;
+
+    // HAL_GPIO_TogglePin(UART_TIME_PORT, UART_RX_BUFWR_PIN);
+
     debug_buf_write(1, USART2->DR);
 
     // uart2_rx_flag = 1;
 
-    uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
+    // uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
 
     HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
-    
+
+    HAL_GPIO_TogglePin(UART_TIME_PORT, UART_RX_BUFWR_PIN);
+
     // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
     // }
     #else
@@ -357,9 +361,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
     // uart2_rx_flag = 1;
 
-    uart3_rx_index = (UART_RXDATA_MAX - hdma_usart3_rx.Instance->NDTR);
+    // uart3_rx_index = (UART_RXDATA_MAX - hdma_usart3_rx.Instance->NDTR);
     
     HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+    
+    #ifdef DEBUG
+    HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
+    #endif
   }
 
   if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))

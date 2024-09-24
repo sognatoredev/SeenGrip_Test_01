@@ -75,12 +75,23 @@ bool debug_buf_read(void)
 	int8_t buf[4];
 	if(flag_end)
     {
+        #ifdef DEBUG
+        HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
+        #endif
+        
 		for(int i=0;i<debug_buf_size;++i){
 			printf("%02X%02X\r\n",debug_buf[i][0],debug_buf[i][1]);
 		}
-        seq = 0;		
+        seq = 0;
+
+        #ifdef DEBUG
+        HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
+        #endif
 	}
-	return flag_end;
+
+    
+	
+    return flag_end;
 }
 
 #if 1
