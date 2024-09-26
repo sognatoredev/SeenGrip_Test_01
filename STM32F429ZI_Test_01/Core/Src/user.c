@@ -34,6 +34,8 @@ uint32_t TIM1_CNT_1 = 0;
 uint32_t TIM1_CNT_2 = 0;
 uint32_t TIM1_CNT_3 = 0;
 
+uint8_t UserButton_Flag = 0;
+
 #define CDC_RXDATA_SIZE                     256
 #define CDC_TXDATA_SIZE                     256
 

@@ -26,7 +26,7 @@ uint8_t UART2_Startpacket = 0x23;
 uint8_t UART3_Startpacket = 0x24;
 
 
-#define debug_buf_size 1000
+#define debug_buf_size 10000
 
 static uint8_t debug_buf[debug_buf_size][2];
 static uint8_t cnt1, cnt2;
@@ -75,23 +75,44 @@ bool debug_buf_read(void)
 	int8_t buf[4];
 	if(flag_end)
     {
-        #ifdef DEBUG
-        HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
-        #endif
-        
+        // #ifdef DEBUG
+        // HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
+        // #endif
+
 		for(int i=0;i<debug_buf_size;++i){
 			printf("%02X%02X\r\n",debug_buf[i][0],debug_buf[i][1]);
 		}
         seq = 0;
 
-        #ifdef DEBUG
-        HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
-        #endif
+        // #ifdef DEBUG
+        // HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
+        // #endif
 	}
 
     
 	
     return flag_end;
+}
+
+static uint8_t UserButton_BufferClear (void)
+{
+    uint8_t buttonstatus = 0;
+
+    if (TIM1_CNT_2 >= 100)
+    {
+        TIM1_CNT_2 = 0;
+
+        if (UserButton_Flag == 1)
+        {
+            buttonstatus = UserButton_Flag;
+
+            UserButton_Flag = 0;
+
+            memset(debug_buf, 0, sizeof(debug_buf));
+        }
+        
+    }
+    return !buttonstatus;
 }
 
 #if 1
@@ -114,6 +135,16 @@ void UART_RX_Proc (void)
         {
             flag_end = false;
 
+            HAL_UART_DMAStop(&huart2);
+            HAL_UART_DMAStop(&huart3);
+        }
+
+        if(UserButton_BufferClear() == HAL_OK)
+        {
+            printf("\r\nUART RX Buffer Clear.\r\n\n");
+
+            HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+            HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
         }
         // for ( i = 0; i < (UART_RXDATA_MAX / 16); i++ )
         // {

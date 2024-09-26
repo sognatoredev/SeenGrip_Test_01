@@ -76,6 +76,11 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
     GPIO_PIN_14
 
 */
+
+#define USER_BUTTON_PORT        GPIOC
+
+#define USER_BUTTON_PIN         GPIO_PIN_13
+
 #define UART_TIME_PORT          GPIOG
 
 #define UART_RX_BUFWR_PIN       GPIO_PIN_5
@@ -125,6 +130,8 @@ extern uint8_t uart2_rx_flag;
 extern uint8_t uart3_rx_flag;
 
 extern uint16_t uart2_rxcpltcallback_cnt;
+
+extern uint8_t UserButton_Flag;
 
 /* USER CODE END Private defines */
 

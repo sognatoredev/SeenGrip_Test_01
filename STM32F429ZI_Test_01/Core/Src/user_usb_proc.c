@@ -23,15 +23,15 @@ static uint16_t count = 0;
 /* USER CODE BEGIN 1 */
 void USB_CDC_Proc (void)
 {
-    if (TIM1_CNT_2 >= 1000)
-    {
-        TIM1_CNT_2 = 0;
+    // if (TIM1_CNT_2 >= 1000)
+    // {
+    //     TIM1_CNT_2 = 0;
 
-        // printf("USB CDC TEST %d\r\n", count);
-        // printf("USB CDC Transmit OK.\r\n");
+    //     // printf("USB CDC TEST %d\r\n", count);
+    //     // printf("USB CDC Transmit OK.\r\n");
 
-        count++;
-    }
+    //     count++;
+    // }
     
     // #if 1
     // if (TIM1_CNT_2 >= 1000)

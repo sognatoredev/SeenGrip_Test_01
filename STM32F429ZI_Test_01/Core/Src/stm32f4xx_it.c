@@ -263,6 +263,20 @@ void TIM1_UP_TIM10_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+
+  /* USER CODE END EXTI15_10_IRQn 1 */
+}
+
+/**
   * @brief This function handles USB On The Go FS global interrupt.
   */
 void OTG_FS_IRQHandler(void)
@@ -301,9 +315,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 
-  TIM1_CNT_1++;
-  TIM1_CNT_2++;
-  TIM1_CNT_3++;
+  TIM1_CNT_1++; // LED 점멸 
+  TIM1_CNT_2++; //
+  TIM1_CNT_3++; //
 }
 
 /**
@@ -340,8 +354,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
     HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
 
+    #ifdef DEBUG
     HAL_GPIO_TogglePin(UART_TIME_PORT, UART_RX_BUFWR_PIN);
-
+    #endif
+    
     // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
     // }
     #else
@@ -427,6 +443,19 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
   else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_FE))
   {
     __HAL_UART_CLEAR_FEFLAG(&huart3);
+  }
+}
+
+/**
+  * @brief  EXTI line detection callbacks.
+  * @param  GPIO_Pin Specifies the pins connected EXTI line
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == GPIO_PIN_13)
+  {
+    UserButton_Flag = 1;
   }
 }
 
