@@ -1,5 +1,10 @@
-../Core/Src/user_uart_proc.c:36:6:debug_buf_init	4	static
-../Core/Src/user_uart_proc.c:44:6:debug_buf_write	24	static,ignoring_inline_asm
-../Core/Src/user_uart_proc.c:73:6:debug_buf_read	16	static
-../Core/Src/user_uart_proc.c:97:16:UserButton_BufferClear	16	static
-../Core/Src/user_uart_proc.c:119:6:UART_RX_Proc	16	static
+../Core/Src/user_uart_proc.c:61:6:debug_buf_init	8	static
+../Core/Src/user_uart_proc.c:71:6:debug_buf_write	24	static,ignoring_inline_asm
+../Core/Src/user_uart_proc.c:101:6:debug_buf_read	16	static
+../Core/Src/user_uart_proc.c:128:6:mseq_init	4	static
+../Core/Src/user_uart_proc.c:133:6:mseq_upload_master	16	static
+../Core/Src/user_uart_proc.c:142:6:mseq_upload_device	16	static
+../Core/Src/user_uart_proc.c:152:6:mseq_display	32	static
+../Core/Src/user_uart_proc.c:163:6:detect_continuous_data	8	static
+../Core/Src/user_uart_proc.c:210:16:UserButton_BufferClear	16	static
+../Core/Src/user_uart_proc.c:232:6:UART_RX_Proc	16	static

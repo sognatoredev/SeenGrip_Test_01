@@ -63,6 +63,16 @@ uint16_t uart3_tx_index = 0;
 uint8_t uart2_rx_flag = 0;
 uint8_t uart3_rx_flag = 0;
 
+uint16_t uart_rx_cnt_total = 0;
+uint16_t uart2_rx_cnt = 0;
+uint16_t uart3_rx_cnt = 0;
+
+uint8_t uart2_rx_ready = 0;
+uint8_t uart3_rx_ready = 0;
+
+uint8_t uart2_rx_tail_1 = 0;
+uint8_t urat3_rx_tail_1 = 0;
+
 uint16_t uart2_rxcpltcallback_cnt = 0;
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere

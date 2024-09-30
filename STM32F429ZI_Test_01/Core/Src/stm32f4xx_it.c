@@ -328,6 +328,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+  uart_rx_cnt_total++;
   // if (!Rx_Start_flag)
   // {
   //   Rx_Start_flag = 1;
@@ -338,6 +339,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   if (huart->Instance == USART2)
   {
     #if 1
+    uart2_rx_ready = 1;
     // if (TIM1_CNT_3 >= 1000)
     // {
     //   TIM1_CNT_3 = 0;
@@ -347,7 +349,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     // HAL_GPIO_TogglePin(UART_TIME_PORT, UART_RX_BUFWR_PIN);
 
     debug_buf_write(1, USART2->DR);
-
+    // detect_continuous_data();
     // uart2_rx_flag = 1;
 
     // uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
@@ -371,10 +373,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   }
   else if (huart->Instance == USART3)
   {
+    uart3_rx_ready = 1;
     // uart3_rx_flag = 1;
     // uart2_rxcpltcallback_cnt++;
     debug_buf_write(2, USART3->DR);
-
+    // detect_continuous_data();
     // uart2_rx_flag = 1;
 
     // uart3_rx_index = (UART_RXDATA_MAX - hdma_usart3_rx.Instance->NDTR);
@@ -385,6 +388,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
     #endif
   }
+  detect_continuous_data();
+
+  // detect_continuous_data();
 
   if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
   {

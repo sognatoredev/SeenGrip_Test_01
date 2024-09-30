@@ -25,12 +25,37 @@ extern DMA_HandleTypeDef hdma_usart3_rx;
 uint8_t UART2_Startpacket = 0x23;
 uint8_t UART3_Startpacket = 0x24;
 
+static uint8_t last_uart_source = 0; // 1 = uart2, 2 = uart3
+uint8_t current_uart_source = 0;
+uint8_t continuous_data_flag = 0;
+
+typedef struct
+{
+    uint8_t cnt;
+    uint8_t MC;
+    uint8_t CKT;
+    uint8_t CKS;
+
+    uint8_t rw;
+    uint8_t ch;
+    uint8_t addr;
+    uint8_t type;
+    uint8_t ckt_cs;
+    uint8_t event;
+    uint8_t valid;
+    uint8_t cks_cs;
+} MSEQ_t;
+
+#define MAX_MSEQ                1000
+
+uint16_t mseq_cnt;
+MSEQ_t mseq[MAX_MSEQ];
 
 #define debug_buf_size 10000
 
 static uint8_t debug_buf[debug_buf_size][2];
 static uint8_t cnt1, cnt2;
-static int seq;
+static uint16_t seq;
 static bool flag_end;
 
 void debug_buf_init(void)
@@ -38,7 +63,9 @@ void debug_buf_init(void)
 	seq = 0;
 	cnt1 = 0;
 	cnt2 = 0;
-	flag_end = false;	
+	flag_end = false;
+
+    mseq_init();
 }
 
 void debug_buf_write(int8_t ch, uint8_t data)
@@ -61,6 +88,7 @@ void debug_buf_write(int8_t ch, uint8_t data)
 		debug_buf[seq][0] = head;
 		debug_buf[seq][1] = data;
 		// seq += seq;
+        
 		seq++;
 	}
 	else{
@@ -82,6 +110,9 @@ bool debug_buf_read(void)
 		for(int i=0;i<debug_buf_size;++i){
 			printf("%02X%02X\r\n",debug_buf[i][0],debug_buf[i][1]);
 		}
+
+        mseq_display();
+        
         seq = 0;
 
         // #ifdef DEBUG
@@ -92,6 +123,88 @@ bool debug_buf_read(void)
     
 	
     return flag_end;
+}
+
+void mseq_init (void)
+{
+    mseq_cnt = 0;
+}
+
+void mseq_upload_master (void)
+{
+    uint16_t seq_cnt = 0;
+    seq_cnt = (uint16_t) seq;
+
+    mseq[mseq_cnt].MC = debug_buf[seq_cnt - 1][1];
+    mseq[mseq_cnt].CKT = debug_buf[seq_cnt][1];
+}
+
+void mseq_upload_device (void)
+{
+    uint16_t seq_cnt = 0;
+    seq_cnt = (uint16_t) seq;
+
+    mseq[mseq_cnt].CKS = debug_buf[seq_cnt - 2][1];
+
+    mseq_cnt++;
+}
+
+void mseq_display (void)
+{
+    uint16_t i = 0;
+
+    for (i = 0; i < mseq_cnt; ++i)
+    {
+        printf("%d,%d,%d,%d\r\n", i, mseq[i].MC, mseq[i].CKT, mseq[i].CKS);
+        // HAL_Delay(1);
+    }
+}
+
+void detect_continuous_data (void)
+{
+    if (uart2_rx_ready)
+    {
+        uart2_rx_ready = 0;
+        current_uart_source = 1;
+    }
+    else if (uart3_rx_ready)
+    {
+        uart3_rx_ready = 0;
+        current_uart_source = 2;
+    }
+
+    if (uart_rx_cnt_total > 8 )
+    {
+        if (current_uart_source != 0 && current_uart_source == last_uart_source)
+        {
+            if (!continuous_data_flag)
+            {
+                mseq_upload_device();
+                mseq_upload_master();
+
+                continuous_data_flag++;
+            }
+            else
+            {
+
+            }
+            
+            // if (current_uart_source == 1)
+            // {
+            //     mseq_upload_master(rxdata);
+            // }
+            // else if (current_uart_source == 2)
+            // {
+            //     mseq_upload_device(rxdata);
+            // }
+        }
+        else if (current_uart_source != last_uart_source)
+        {
+            continuous_data_flag = 0;
+        }
+        // uart_rx_cnt_total = 0;
+    }
+    last_uart_source = current_uart_source;
 }
 
 static uint8_t UserButton_BufferClear (void)
@@ -142,6 +255,9 @@ void UART_RX_Proc (void)
         if(UserButton_BufferClear() == HAL_OK)
         {
             printf("\r\nUART RX Buffer Clear.\r\n\n");
+            
+            seq = 0;
+            uart_rx_cnt_total = 0;
 
             HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
             HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);

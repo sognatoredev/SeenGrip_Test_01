@@ -24,6 +24,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "usbd_def.h"
 #include "user_uart_proc.h"
 // #include "debug_buf.h"
@@ -132,6 +133,15 @@ extern uint8_t uart3_rx_flag;
 extern uint16_t uart2_rxcpltcallback_cnt;
 
 extern uint8_t UserButton_Flag;
+
+extern uint16_t uart_rx_cnt_total;
+extern uint16_t uart2_rx_cnt;
+extern uint16_t uart3_rx_cnt;
+
+extern uint8_t uart2_rx_ready;
+extern uint8_t uart3_rx_ready;
+extern uint8_t uart2_rx_tail_1;
+extern uint8_t urat3_rx_tail_1;
 
 /* USER CODE END Private defines */
 

@@ -5,6 +5,7 @@
         "usbd_def.h": "c",
         "user_uart_proc.h": "c",
         "main.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "user_gpio_proc.h": "c"
     }
 }
