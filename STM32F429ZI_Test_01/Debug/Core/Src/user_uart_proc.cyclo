@@ -1,0 +1,2 @@
+../Core/Src/user_uart_proc.c:28:16:UserButton_BufferClear	3
+../Core/Src/user_uart_proc.c:51:6:UART_RX_BufferClear	2
