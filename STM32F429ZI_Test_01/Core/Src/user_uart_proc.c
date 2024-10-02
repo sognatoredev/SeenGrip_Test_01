@@ -130,6 +130,7 @@ void mseq_init (void)
     mseq_cnt = 0;
 }
 
+#if 0
 void mseq_upload_master (void)
 {
     uint16_t seq_cnt = 0;
@@ -148,6 +149,29 @@ void mseq_upload_device (void)
 
     mseq_cnt++;
 }
+#else
+void mseq_upload_master (uint16_t size)
+{
+    uint16_t rxdataSize = 0;
+
+    rxdataSize = size;
+
+    mseq[mseq_cnt].MC = uart2_rx_IDLE_buf[0];
+    mseq[mseq_cnt].CKT = uart2_rx_IDLE_buf[1];
+}
+
+void mseq_upload_device (uint16_t size)
+{
+    uint16_t rxdataSize = 0;
+
+    rxdataSize = size;
+
+    // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
+    mseq[mseq_cnt].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+
+    mseq_cnt++;
+}
+#endif
 
 void mseq_display (void)
 {
@@ -160,6 +184,45 @@ void mseq_display (void)
     }
 }
 
+uint8_t decode_MC_Readwrite (uint8_t data)
+{
+    uint8_t ByteValue = 0;
+    
+    if (ByteValue & 0x80)
+    {
+        return 1; // Read access
+    }
+    else
+    {
+        return 0; // Write access
+    }
+}
+
+
+uint8_t decode_MC_CommunicationChannel (uint8_t data)
+{
+    uint8_t ByteValue = 0;
+    
+    switch (ByteValue & 0x60)
+    {
+        case 0x00 :
+            return 0;
+        case 0x01 :
+            return 1;
+        case 0x02 :
+            return 2;
+        case 0x03 :
+            return 3;
+        default :
+            return 255;
+    }
+}
+
+uint8_t decode_MC_Address (uint8_t data)
+{
+
+}
+#if 0
 void detect_continuous_data (void)
 {
     if (uart2_rx_ready)
@@ -206,6 +269,7 @@ void detect_continuous_data (void)
     }
     last_uart_source = current_uart_source;
 }
+#endif
 
 static uint8_t UserButton_BufferClear (void)
 {
@@ -243,7 +307,7 @@ void UART_RX_Proc (void)
         // {
         //     debug_buf_write(1, uart2_rx_buf[i]);
         // }
-
+        #if 0
         if (debug_buf_read())
         {
             flag_end = false;
@@ -251,6 +315,13 @@ void UART_RX_Proc (void)
             HAL_UART_DMAStop(&huart2);
             HAL_UART_DMAStop(&huart3);
         }
+        #else
+        if (uart_rx_IDLE_TotalCnt >= 10000)
+        {
+            uart_rx_IDLE_TotalCnt = 0;
+            mseq_display();
+        }
+        #endif
 
         if(UserButton_BufferClear() == HAL_OK)
         {

@@ -143,6 +143,14 @@ extern uint8_t uart3_rx_ready;
 extern uint8_t uart2_rx_tail_1;
 extern uint8_t urat3_rx_tail_1;
 
+#define UART_RX_IDLE_BUFSIZE        5000
+
+extern uint8_t uart2_rx_IDLE_buf[];
+extern uint8_t uart3_rx_IDLE_buf[];
+extern uint8_t uart6_rx_IDLE_buf[];
+
+extern uint16_t uart_rx_IDLE_TotalCnt;
+
 /* USER CODE END Private defines */
 
 

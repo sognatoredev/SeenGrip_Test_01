@@ -36,12 +36,15 @@ extern bool debug_buf_read(void);
 
 
 extern void mseq_display (void);
-extern void mseq_upload_master (void);
-extern void mseq_upload_device (void);
+// extern void mseq_upload_master (void);
+// extern void mseq_upload_device (void);
+extern void mseq_upload_master (uint16_t size);
+extern void mseq_upload_device (uint16_t size);
 extern void detect_continuous_data (void);
 
 extern void UART_RX_Proc (void);
 
+extern uint16_t mseq_cnt;
 
 /* USER CODE END Prototypes */
 

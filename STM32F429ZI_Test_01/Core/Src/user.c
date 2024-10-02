@@ -54,6 +54,14 @@ uint8_t uart2_tx_buf[UART_TXDATA_MAX] = { 0 };
 uint8_t uart3_rx_buf[UART_RXDATA_MAX] = { 0 };
 uint8_t uart3_tx_buf[UART_TXDATA_MAX] = { 0 };
 
+
+
+uint8_t uart2_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
+uint8_t uart3_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
+uint8_t uart6_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
+
+uint16_t uart_rx_IDLE_TotalCnt = 0;
+
 uint16_t uart2_rx_index = 0;
 uint16_t uart2_tx_index = 0;
 

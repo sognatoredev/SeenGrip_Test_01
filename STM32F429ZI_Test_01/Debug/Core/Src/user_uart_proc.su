@@ -2,9 +2,11 @@
 ../Core/Src/user_uart_proc.c:71:6:debug_buf_write	24	static,ignoring_inline_asm
 ../Core/Src/user_uart_proc.c:101:6:debug_buf_read	16	static
 ../Core/Src/user_uart_proc.c:128:6:mseq_init	4	static
-../Core/Src/user_uart_proc.c:133:6:mseq_upload_master	16	static
-../Core/Src/user_uart_proc.c:142:6:mseq_upload_device	16	static
-../Core/Src/user_uart_proc.c:152:6:mseq_display	32	static
-../Core/Src/user_uart_proc.c:163:6:detect_continuous_data	8	static
-../Core/Src/user_uart_proc.c:210:16:UserButton_BufferClear	16	static
-../Core/Src/user_uart_proc.c:232:6:UART_RX_Proc	16	static
+../Core/Src/user_uart_proc.c:153:6:mseq_upload_master	24	static
+../Core/Src/user_uart_proc.c:163:6:mseq_upload_device	24	static
+../Core/Src/user_uart_proc.c:176:6:mseq_display	32	static
+../Core/Src/user_uart_proc.c:187:9:decode_MC_Readwrite	24	static
+../Core/Src/user_uart_proc.c:202:9:decode_MC_CommunicationChannel	24	static
+../Core/Src/user_uart_proc.c:221:9:decode_MC_Address	16	static
+../Core/Src/user_uart_proc.c:274:16:UserButton_BufferClear	16	static
+../Core/Src/user_uart_proc.c:296:6:UART_RX_Proc	16	static

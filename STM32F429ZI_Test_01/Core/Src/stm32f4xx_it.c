@@ -60,8 +60,9 @@ uint8_t Rx_Start_flag = 0;
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim1;
-extern DMA_HandleTypeDef hdma_usart2_rx;
-extern DMA_HandleTypeDef hdma_usart3_rx;
+extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
@@ -207,34 +208,6 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles DMA1 stream1 global interrupt.
-  */
-void DMA1_Stream1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Stream1_IRQn 0 */
-
-  /* USER CODE END DMA1_Stream1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart3_rx);
-  /* USER CODE BEGIN DMA1_Stream1_IRQn 1 */
-
-  /* USER CODE END DMA1_Stream1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA1 stream5 global interrupt.
-  */
-void DMA1_Stream5_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
-
-  /* USER CODE END DMA1_Stream5_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart2_rx);
-  /* USER CODE BEGIN DMA1_Stream5_IRQn 1 */
-
-  /* USER CODE END DMA1_Stream5_IRQn 1 */
-}
-
-/**
   * @brief This function handles EXTI line[9:5] interrupts.
   */
 void EXTI9_5_IRQHandler(void)
@@ -260,6 +233,34 @@ void TIM1_UP_TIM10_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+
+  /* USER CODE END USART2_IRQn 0 */
+  HAL_UART_IRQHandler(&huart2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART3 global interrupt.
+  */
+void USART3_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART3_IRQn 0 */
+
+  /* USER CODE END USART3_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_IRQn 1 */
+
+  /* USER CODE END USART3_IRQn 1 */
 }
 
 /**
@@ -290,6 +291,20 @@ void OTG_FS_IRQHandler(void)
   /* USER CODE END OTG_FS_IRQn 1 */
 }
 
+/**
+  * @brief This function handles USART6 global interrupt.
+  */
+void USART6_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART6_IRQn 0 */
+
+  /* USER CODE END USART6_IRQn 0 */
+  HAL_UART_IRQHandler(&huart6);
+  /* USER CODE BEGIN USART6_IRQn 1 */
+
+  /* USER CODE END USART6_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 
 /**
@@ -315,7 +330,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 
-  TIM1_CNT_1++; // LED 점멸 
+  TIM1_CNT_1++; // LED ?���???? 
   TIM1_CNT_2++; //
   TIM1_CNT_3++; //
 }
@@ -334,7 +349,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   //   Rx_Start_flag = 1;
   //   debug_buf_init();
   // }
-
+  #if 0 // IDLE Line Test  : 0
   /* Prevent unused argument(s) compilation warning */
   if (huart->Instance == USART2)
   {
@@ -354,7 +369,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
     // uart2_rx_index = (UART_RXDATA_MAX - hdma_usart2_rx.Instance->NDTR);
 
-    HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
 
     #ifdef DEBUG
     HAL_GPIO_TogglePin(UART_TIME_PORT, UART_RX_BUFWR_PIN);
@@ -382,40 +397,41 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
     // uart3_rx_index = (UART_RXDATA_MAX - hdma_usart3_rx.Instance->NDTR);
     
-    HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
     
     #ifdef DEBUG
     HAL_GPIO_TogglePin(UART_TIME_PORT, UART_TX_CPLT_TIME_PIN); // DEBUG
     #endif
   }
-  detect_continuous_data();
 
+  detect_continuous_data();
+  #endif
   // detect_continuous_data();
 
-  if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
-  {
-    __HAL_UART_CLEAR_OREFLAG(&huart2);
+  // if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE))
+  // {
+  //   __HAL_UART_CLEAR_OREFLAG(&huart2);
     
-    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
-    // HAL_UART_DeInit(&huart2);
-    // HAL_UART_Init(&huart2);
-    // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
-  }
-  else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_ORE))
-  {
-    __HAL_UART_CLEAR_OREFLAG(&huart3);
+  //   // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+  //   // HAL_UART_DeInit(&huart2);
+  //   // HAL_UART_Init(&huart2);
+  //   // HAL_UART_Receive_DMA(&huart2, uart2_rx_buf, UART_RXDATA_MAX);
+  // }
+  // else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_ORE))
+  // {
+  //   __HAL_UART_CLEAR_OREFLAG(&huart3);
     
-    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
-    // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
-  }
-  else if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_FE))
-  {
-    __HAL_UART_CLEAR_FEFLAG(&huart2);
-  }
-  else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_FE))
-  {
-    __HAL_UART_CLEAR_FEFLAG(&huart3);
-  }
+  //   // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+  //   // HAL_UART_Receive_DMA(&huart3, uart3_rx_buf, UART_RXDATA_MAX);
+  // }
+  // else if (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_FE))
+  // {
+  //   __HAL_UART_CLEAR_FEFLAG(&huart2);
+  // }
+  // else if (__HAL_UART_GET_FLAG(&huart3, UART_FLAG_FE))
+  // {
+  //   __HAL_UART_CLEAR_FEFLAG(&huart3);
+  // }
 }
 
 /**
@@ -465,4 +481,58 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
   }
 }
 
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+  uart_rx_IDLE_TotalCnt += Size;
+
+  if (huart->Instance == USART2)
+  {
+    mseq_upload_master(Size);
+    
+    HAL_UARTEx_ReceiveToIdle_IT(&huart2, uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    // __HAL_DMA_DISABLE(&hdma_usart2_rx);
+    // hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    // __HAL_DMA_ENABLE(&hdma_usart2_rx);
+    
+    // __HAL_UART_CLEAR_IDLEFLAG(huart);
+    // // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
+    // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+
+    // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
+    // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+  }
+  else if (huart->Instance == USART3)
+  {
+    // __HAL_DMA_DISABLE(&hdma_usart2_rx);
+    // hdma_usart2_rx.Instance->CNDTR = 1024;
+    // __HAL_DMA_ENABLE(&hdma_usart2_rx);
+    mseq_upload_device(Size);
+    
+    // __HAL_DMA_DISABLE(&hdma_usart3_rx);
+    // hdma_usart3_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    // __HAL_DMA_ENABLE(&hdma_usart3_rx);
+
+    // __HAL_UART_CLEAR_IDLEFLAG(huart);
+    // // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
+    // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart3, uart3_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    
+  }
+  else if (huart->Instance == USART6)
+  {
+    mseq_upload_device(Size);
+    HAL_UARTEx_ReceiveToIdle_IT(&huart6, uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    // __HAL_DMA_DISABLE(&hdma_usart6_rx);
+    // hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    // __HAL_DMA_ENABLE(&hdma_usart3_rx);
+
+    // __HAL_UART_CLEAR_IDLEFLAG(huart);
+    // // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
+    // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart6, uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+  }
+  
+}
 /* USER CODE END 1 */

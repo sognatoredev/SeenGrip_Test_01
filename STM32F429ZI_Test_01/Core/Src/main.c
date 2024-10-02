@@ -18,7 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
@@ -33,6 +32,10 @@
 /* USER CODE BEGIN PTD */
 uint8_t USB_TX_Data[2400] = { 0 };
 Q_queue_t USB_TX_Q;
+
+extern DMA_HandleTypeDef hdma_usart2_rx;
+extern DMA_HandleTypeDef hdma_usart3_rx;
+extern DMA_HandleTypeDef hdma_usart6_rx;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -99,23 +102,34 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   MX_USB_DEVICE_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   debug_buf_init();
   Q_Init(&USB_TX_Q, (uint8_t *) USB_TX_Data, 2400);
-  
 
   HAL_Delay(500);
   // BootMessagePrint();
   // GetClockSourcePrint();
 
+  // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+  // HAL_UARTEx_ReceiveToIdle_DMA(&huart3, uart3_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+  // HAL_UARTEx_ReceiveToIdle_DMA(&huart6, uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+  // __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+  // __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_TC);
+  // // __HAL_DMA_DISABLE_IT(&hdma_usart3_rx, DMA_IT_HT);
+  // __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
+  // __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_TC);
+  HAL_UARTEx_ReceiveToIdle_IT(&huart2, uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+  HAL_UARTEx_ReceiveToIdle_IT(&huart6, uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+
   HAL_TIM_Base_Start_IT(&htim1);
-  HAL_UART_Receive_DMA(&huart2, (uint8_t *) uart2_rx_buf, UART_RXDATA_MAX);
-  HAL_UART_Receive_DMA(&huart3, (uint8_t *) uart3_rx_buf, UART_RXDATA_MAX);
+
+  // HAL_UART_Receive_DMA(&huart2, (uint8_t *) uart2_rx_buf, UART_RXDATA_MAX);
+  // HAL_UART_Receive_DMA(&huart3, (uint8_t *) uart3_rx_buf, UART_RXDATA_MAX);
 
   /* USER CODE END 2 */
 
