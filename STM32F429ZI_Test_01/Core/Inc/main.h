@@ -127,7 +127,7 @@ extern void mseq_upload_device (uint16_t size);
 
 extern Q_queue_t USB_TX_Q;
 
-extern uint16_t mseq_cnt;
+
 
 /* USER CODE END Private defines */
 

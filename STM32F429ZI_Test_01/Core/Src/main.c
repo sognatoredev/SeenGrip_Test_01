@@ -63,76 +63,24 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-typedef struct
-{
-    uint8_t cnt;
-    uint8_t MC;
-    uint8_t CKT;
-    uint8_t CKS;
+// typedef struct
+// {
+//     uint8_t cnt;
+//     uint8_t MC;
+//     uint8_t CKT;
+//     uint8_t CKS;
 
-    uint8_t rw;
-    uint8_t ch;
-    uint8_t addr;
-    uint8_t type;
-    uint8_t ckt_cs;
-    uint8_t event;
-    uint8_t valid;
-    uint8_t cks_cs;
-} MSEQ_t;
+//     uint8_t rw;
+//     uint8_t ch;
+//     uint8_t addr;
+//     uint8_t type;
+//     uint8_t ckt_cs;
+//     uint8_t event;
+//     uint8_t valid;
+//     uint8_t cks_cs;
+// } MSEQ_t;
 
-#define MAX_MSEQ                1000
-
-uint16_t mseq_cnt;
-MSEQ_t mseq[MAX_MSEQ];
-
-bool flag_end;
-
-void mseq_upload_master (uint16_t size)
-{
-    uint16_t rxdataSize = 0;
-
-    rxdataSize = size;
-
-    mseq[mseq_cnt].MC = uart2_rx_IDLE_buf[0];
-    mseq[mseq_cnt].CKT = uart2_rx_IDLE_buf[1];
-}
-
-void mseq_upload_device (uint16_t size)
-{
-    uint16_t rxdataSize = 0;
-    uint16_t cks_offset = 1;
-
-    rxdataSize = size;
-
-    // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
-    mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
-
-    mseq_cnt++;
-}
-
-void mseq_display (void)
-{
-    uint16_t i = 0;
-
-    for (i = 0; i < mseq_cnt; ++i)
-    {
-        printf("%d,%d,%d,%d\r\n", i, mseq[i].MC, mseq[i].CKT, mseq[i].CKS);
-        // HAL_Delay(1);
-    }
-}
-
-void debug_buf_read (void)
-{
-  if (uart_rx_IDLE_TotalCnt >= 10000)
-  {
-    uart_rx_IDLE_TotalCnt = 0;
-
-    mseq_display();
-
-    HAL_UART_DMAStop(&huart2);
-    HAL_UART_DMAStop(&huart6);
-  }
-}
+// #define MAX_MSEQ                1000
 
 extern uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
