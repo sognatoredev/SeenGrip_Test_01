@@ -81,11 +81,11 @@ void debug_buf_read (void)
   }
 }
 
-static uint8_t Decode_MC_ReadWrite (uint8_t pData)
+static uint8_t Decode_MC_ReadWrite (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
+    MCdata = Data;
     MCdata = (MCdata >> 7) & 0x01;
 
     switch (MCdata)
@@ -100,21 +100,21 @@ static uint8_t Decode_MC_ReadWrite (uint8_t pData)
     }
 }
 
-static uint8_t Decode_MC_CommunicationChannel (uint8_t pData)
+// static uint8_t Decode_MC_CommunicationChannel (uint8_t pData)
+// {
+//     uint8_t MCdata = 0;
+
+//     MCdata = pData;
+//     MCdata = MCdata >> 5;
+
+//     return MCdata & 0x03;
+// }
+
+static uint8_t Print_MC_CommunicationChannel (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
-    MCdata = MCdata >> 5;
-
-    return MCdata & 0x03;
-}
-
-static uint8_t Print_MC_CommunicationChannel (uint8_t pData)
-{
-    uint8_t MCdata = 0;
-
-    MCdata = pData;
+    MCdata = Data;
     MCdata = (MCdata >> 5) & 0x03;
     
     switch (MCdata)
@@ -134,56 +134,56 @@ static uint8_t Print_MC_CommunicationChannel (uint8_t pData)
     }
 }
 
-static uint8_t Decode_MC_Address (uint8_t pData)
+static uint8_t Decode_MC_Address (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
+    MCdata = Data;
     
     return MCdata & 0x1F;
 }
 
-static uint8_t Decode_CKT_Type (uint8_t pData)
+static uint8_t Decode_CKT_Type (uint8_t Data)
 {
     uint8_t MCdata = 0;
     
-    MCdata = pData;
+    MCdata = Data;
 
     return (MCdata >> 6) & 0x03;
 }
 
-static uint8_t Decode_CKT_Checksum (uint8_t pData)
+static uint8_t Decode_CKT_Checksum (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
+    MCdata = Data;
 
     return MCdata & 0x3F;
 }
 
-static uint8_t Decode_CKS_EventFlag (uint8_t pData)
+static uint8_t Decode_CKS_EventFlag (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
+    MCdata = Data;
 
     return (MCdata >> 7) & 0x01;
 }
 
-static uint8_t Decode_CKS_PDStatus (uint8_t pData)
+static uint8_t Decode_CKS_PDStatus (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
+    MCdata = Data;
 
     return (MCdata >> 6) & 0x01;
 }
 
-static uint8_t Decode_CKS_Checksum (uint8_t pData)
+static uint8_t Decode_CKS_Checksum (uint8_t Data)
 {
     uint8_t MCdata = 0;
 
-    MCdata = pData;
+    MCdata = Data;
 
     return MCdata & 0x3F;
 }
