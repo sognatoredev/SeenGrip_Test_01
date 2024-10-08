@@ -29,6 +29,7 @@ extern "C" {
 #include <stdint.h>
 /* USER CODE END Private defines */
 
+#define CHECKSUM_SEEDVALUE        0x52
 /* USER CODE BEGIN Prototypes */
 extern uint16_t mseq_cnt;
 
@@ -47,6 +48,15 @@ typedef struct
     uint8_t event;
     uint8_t valid;
     uint8_t cks_cs;
+
+    uint8_t Master_octet_cnt;
+    uint8_t Device_octet_cnt;
+
+    uint8_t Master_checksum;
+    uint8_t Device_checksum;
+
+    uint8_t Start_Octet;
+    uint8_t End_Octet;
 } MSEQ_t;
 
 typedef struct MC_Communication_channel
@@ -64,6 +74,19 @@ MC_Communication_channel_t CommunicationChannel =
   .MC_Com_Ch_2 = "Diagnosis",
   .MC_Com_Ch_3 = "ISDU",
 };
+
+typedef struct Mseq_Checksum
+{
+  uint8_t * Checksum_Pass;
+  uint8_t * Checksum_Error;
+} Mseq_Checksum_t;
+
+Mseq_Checksum_t MseqChecksum = 
+{
+  .Checksum_Pass = "Pass",
+  .Checksum_Error = "Error",
+};
+
 
 #define MAX_RX_DATA             20000
 

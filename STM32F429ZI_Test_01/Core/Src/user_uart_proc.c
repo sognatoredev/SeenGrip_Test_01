@@ -28,16 +28,92 @@ extern  MSEQ_t mseq[MAX_MSEQ];
 uint16_t mseq_cnt;
 MSEQ_t mseq[MAX_MSEQ];
 
+uint8_t ck6 = 0;
+
 bool flag_end;
+
+
+
+static uint8_t Decode_CalChecksum(uint8_t * pData, uint8_t length)
+{
+    uint8_t ck8 = CHECKSUM_SEEDVALUE;
+
+    if (length <= 2)
+    {
+        ck8 ^= *pData++; // MC Check 
+
+        ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
+        
+    }
+    else if (length > 2)
+    {
+        ck8 ^= *pData++; // MC Check 
+
+        ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
+
+        for (uint8_t i = 0; i < length -2; i++)
+        {
+            ck8 ^= *pData++;
+        }
+    }
+
+    // for (uint8_t i = 2; i < (length - 2); i++)
+    // {
+    //         ck8 ^= *pData++;
+    // }
+
+    //Section A.1.6
+    uint8_t bit5 = ((ck8 >> 7) & 1U) ^ ((ck8 >> 5) & 1U) ^ ((ck8 >> 3) & 1U) ^ ((ck8 >> 1) & 1U);
+    uint8_t bit4 = ((ck8 >> 6) & 1U) ^ ((ck8 >> 4) & 1U) ^ ((ck8 >> 2) & 1U) ^ (ck8 & 1U);
+    uint8_t bit3 = ((ck8 >> 7) & 1U) ^ ((ck8 >> 6) & 1U);
+    uint8_t bit2 = ((ck8 >> 5) & 1U) ^ ((ck8 >> 4) & 1U);
+    uint8_t bit1 = ((ck8 >> 3) & 1U) ^ ((ck8 >> 2) & 1U);
+    uint8_t bit0 = ((ck8 >> 1) & 1U) ^ ((ck8 & 1U));
+    uint8_t ck6 =     bit5 << 5 |
+                    bit4 << 4 |
+                    bit3 << 3 |
+                    bit2 << 2 |
+                    bit1 << 1 |
+                    bit0;
+    return ck6;
+}
+
+static uint8_t Decode_CKT_GetChecksum (uint8_t * pData, uint8_t length)
+{
+    uint8_t checksum6 = 0;
+    uint8_t master_checksum = 0;
+    uint8_t checksum_mctypebit = 0;
+    uint8_t calculated_checksum = 0;
+    
+    checksum6 = Decode_CalChecksum((uint8_t *) pData, length);
+    checksum_mctypebit = mseq[mseq_cnt].CKT & 0xC0;
+    calculated_checksum = checksum_mctypebit | checksum6;
+
+    return (mseq[mseq_cnt].CKT == calculated_checksum) ? 1 : 0;
+    // if (mseq[mseq_cnt].CKT == calculated_checksum)
+    // {
+    //     return 1;
+    // }
+    // else
+    // {
+    //     return 0;
+    // }
+}
 
 void mseq_upload_master (uint16_t size)
 {
     uint16_t rxdataSize = 0;
 
     rxdataSize = size;
+    mseq[mseq_cnt].Master_octet_cnt = rxdataSize;
 
     mseq[mseq_cnt].MC = uart2_rx_IDLE_buf[0];
     mseq[mseq_cnt].CKT = uart2_rx_IDLE_buf[1];
+    
+    mseq[mseq_cnt].Start_Octet = uart2_rx_IDLE_buf[0];
+    mseq[mseq_cnt].End_Octet = uart2_rx_IDLE_buf[rxdataSize - 1];
+
+    mseq[mseq_cnt].Master_checksum = Decode_CKT_GetChecksum(uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt].Device_octet_cnt));
 }
 
 void mseq_upload_device (uint16_t size)
@@ -46,9 +122,11 @@ void mseq_upload_device (uint16_t size)
     uint16_t cks_offset = 1;
 
     rxdataSize = size;
-
+    mseq[mseq_cnt].Device_octet_cnt = rxdataSize;
     // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
+    
     mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+    // Decode_GetChecksum(uart6_rx_IDLE_buf[0], rxdataSize);
 
     mseq_cnt++;
 }
@@ -167,7 +245,22 @@ static uint8_t Decode_CKS_EventFlag (uint8_t Data)
 
     MCdata = Data;
 
+    #if 0
     return (MCdata >> 7) & 0x01;
+    #else
+    MCdata = (MCdata >> 7) & 0x01;
+
+    switch (MCdata)
+    {
+        case 0 :
+            return 'N';
+        case 1 :
+            return 'E';
+        default :
+            printf("Unexpected value\n");
+            return 'X';
+    }
+    #endif
 }
 
 static uint8_t Decode_CKS_PDStatus (uint8_t Data)
@@ -176,7 +269,22 @@ static uint8_t Decode_CKS_PDStatus (uint8_t Data)
 
     MCdata = Data;
 
+    #if 0
     return (MCdata >> 6) & 0x01;
+    #else
+    MCdata = (MCdata >> 6) & 0x01;
+
+    switch (MCdata)
+    {
+        case 0 :
+            return 'V';
+        case 1 :
+            return 'N';
+        default :
+            printf("Unexpected value\n");
+            return 'X';
+    }
+    #endif
 }
 
 static uint8_t Decode_CKS_Checksum (uint8_t Data)
@@ -188,6 +296,44 @@ static uint8_t Decode_CKS_Checksum (uint8_t Data)
     return MCdata & 0x3F;
 }
 
+static uint8_t Decode_CKT_AllDataChecksum (uint8_t Data)
+{
+    uint8_t MCdata = 0;
+
+    MCdata = Data;
+    MCdata = (MCdata >> 5) & 0x03;
+    
+    switch (MCdata)
+    {
+        case 0 :
+            printf("%s,", MseqChecksum.Checksum_Pass);
+            break;
+        case 1 :
+            printf("%s,", MseqChecksum.Checksum_Error);
+            break;
+    }
+}
+
+static uint8_t Decode_CKS_AllDataChecksum (uint8_t Data)
+{
+    uint8_t MCdata = 0;
+
+    MCdata = Data;
+    MCdata = (MCdata >> 5) & 0x03;
+    
+    switch (MCdata)
+    {
+        case 0 :
+            printf("%s,", MseqChecksum.Checksum_Pass);
+            break;
+        case 1 :
+            printf("%s,", MseqChecksum.Checksum_Error);
+            break;
+    }
+}
+
+
+
 void Mseq_Display_PacketFrame (uint16_t cnt)
 {
     uint16_t i = 0;
@@ -195,14 +341,22 @@ void Mseq_Display_PacketFrame (uint16_t cnt)
 
     printf("%c,",Decode_MC_ReadWrite(mseq[i].MC));
     Print_MC_CommunicationChannel(mseq[i].MC);
-    printf("%02X,%d,%02X,%d,%d,%02X\r\n", 
-            Decode_MC_Address(mseq[i].MC),
-            Decode_CKT_Type(mseq[i].CKT),
-            Decode_CKT_Checksum(mseq[i].CKT),
-            Decode_CKS_EventFlag(mseq[i].CKS),
-            Decode_CKS_PDStatus(mseq[i].CKS),
-            Decode_CKS_Checksum(mseq[i].CKS)
-            );
+    printf("%02X,%d,%02X,%c,%c,%02X,", 
+                                        Decode_MC_Address(mseq[i].MC),
+                                        Decode_CKT_Type(mseq[i].CKT),
+                                        Decode_CKT_Checksum(mseq[i].CKT),
+                                        Decode_CKS_EventFlag(mseq[i].CKS),
+                                        Decode_CKS_PDStatus(mseq[i].CKS),
+                                        Decode_CKS_Checksum(mseq[i].CKS)
+                                        );
+    printf("%d,%d,%02X,%02X,%02X,%02X\r\n", 
+                                        mseq[i].Master_octet_cnt,
+                                        mseq[i].Device_octet_cnt,
+                                        mseq[i].Master_checksum,
+                                        mseq[i].Device_checksum,
+                                        mseq[i].Start_Octet,
+                                        mseq[i].End_Octet
+                                        );
 }
 
 
