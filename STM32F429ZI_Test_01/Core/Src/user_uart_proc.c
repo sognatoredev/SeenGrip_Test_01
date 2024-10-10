@@ -32,30 +32,44 @@ uint8_t ck6 = 0;
 
 bool flag_end;
 
+uint32_t uart2_rx_stackcnt_total = 0;
 
-
-static uint8_t Decode_CalChecksum(uint8_t * pData, uint8_t length)
+static uint8_t Decode_CalChecksum(const uint8_t * pData, uint8_t length)  // CKT 에 대한 Checksum 검증
 {
-    uint8_t ck8 = CHECKSUM_SEEDVALUE;
+    uint8_t ck8 = 0x52;
+    uint8_t checksumsize = 0;
 
-    if (length <= 2)
+    checksumsize = length;
+
+    // ck8 ^= *pData++; // MC Check 
+
+    // ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
+    for (uint8_t i = 0; i < checksumsize; i++)
     {
-        ck8 ^= *pData++; // MC Check 
+        ck8 ^= *pData++;
+    }
+    // if (checksumsize < 2)
+    // {
+    //     return 0;
+    // }
+    // if (checksumsize == 2)
+    // {
+    //     ck8 ^= *pData++; // MC Check 
 
-        ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
+    //     ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
         
-    }
-    else if (length > 2)
-    {
-        ck8 ^= *pData++; // MC Check 
+    // }
+    // else if (checksumsize > 2)
+    // {
+    //     ck8 ^= *pData++; // MC Check 
 
-        ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
+    //     ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
 
-        for (uint8_t i = 0; i < length -2; i++)
-        {
-            ck8 ^= *pData++;
-        }
-    }
+    //     for (uint8_t i = 0; i < length -2; i++)
+    //     {
+    //         ck8 ^= *pData++;
+    //     }
+    // }
 
     // for (uint8_t i = 2; i < (length - 2); i++)
     // {
@@ -69,7 +83,7 @@ static uint8_t Decode_CalChecksum(uint8_t * pData, uint8_t length)
     uint8_t bit2 = ((ck8 >> 5) & 1U) ^ ((ck8 >> 4) & 1U);
     uint8_t bit1 = ((ck8 >> 3) & 1U) ^ ((ck8 >> 2) & 1U);
     uint8_t bit0 = ((ck8 >> 1) & 1U) ^ ((ck8 & 1U));
-    uint8_t ck6 =     bit5 << 5 |
+    uint8_t ck6 =   bit5 << 5 |
                     bit4 << 4 |
                     bit3 << 3 |
                     bit2 << 2 |
@@ -78,7 +92,7 @@ static uint8_t Decode_CalChecksum(uint8_t * pData, uint8_t length)
     return ck6;
 }
 
-static uint8_t Decode_CKT_GetChecksum (uint8_t * pData, uint8_t length)
+static uint8_t Decode_CKT_GetChecksum (const uint8_t * pData, uint8_t length)
 {
     uint8_t checksum6 = 0;
     uint8_t master_checksum = 0;
@@ -100,20 +114,57 @@ static uint8_t Decode_CKT_GetChecksum (uint8_t * pData, uint8_t length)
     // }
 }
 
+void Verification_CKTChecksum (void)
+{
+    uint8_t checksum6 = 0;
+    uint8_t master_checksum = 0;
+    uint8_t checksum_mctypebit = 0;
+    uint8_t calculated_checksum = 0;
+    uint8_t ChecksumTorF = 0;
+    
+    checksum6 = Decode_CalChecksum(TestValue, 10);
+    checksum_mctypebit = TestValue[1] & 0xC0;
+    calculated_checksum = checksum_mctypebit | checksum6;
+
+    if (TestValue[1] == calculated_checksum)
+    {
+        ChecksumTorF = 1;
+    }
+    else
+    {
+        ChecksumTorF = 0;
+    }
+
+    printf(" Checksum 6bit Value : 0x%02X\r\n", checksum6);
+    printf(" Checksum calculated_checksum Value : 0x%02X\r\n", calculated_checksum);
+    printf(" Checksum Pass : %d\r\n", ChecksumTorF);
+}
+
 void mseq_upload_master (uint16_t size)
 {
-    uint16_t rxdataSize = 0;
+    // uint16_t rxdataSize = 0;
+    // uint16_t cks_offset = 1;
+    uint8_t rxdataSize = 0;
+    uint8_t cks_offset = 1;
+    uint8_t checksumflag = 0;
+    uint8_t checksumlength = 0;
 
-    rxdataSize = size;
+    rxdataSize = (uint8_t)size;
+    checksumlength = rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt;
+    
+    memcpy(uart2_rx_stack_buf + uart2_rx_stackcnt_total, uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
+    mseq[mseq_cnt].Start_Octet = uart2_rx_stack_buf + uart2_rx_stackcnt_total; // 데이터 시작점부터 출력 하기위한 포인터 
+    // mseq[mseq_cnt].End_Octet = uart2_rx_IDLE_buf[rxdataSize - 1]; // 데이터 끝 지점 포인터 (수정 필요함)
+    uart2_rx_stackcnt_total += rxdataSize; // octet 데이터 수 만큼 포인터 증가
+
     mseq[mseq_cnt].Master_octet_cnt = rxdataSize;
 
     mseq[mseq_cnt].MC = uart2_rx_IDLE_buf[0];
     mseq[mseq_cnt].CKT = uart2_rx_IDLE_buf[1];
-    
-    mseq[mseq_cnt].Start_Octet = uart2_rx_IDLE_buf[0];
-    mseq[mseq_cnt].End_Octet = uart2_rx_IDLE_buf[rxdataSize - 1];
 
-    mseq[mseq_cnt].Master_checksum = Decode_CKT_GetChecksum(uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt].Device_octet_cnt));
+    checksumflag = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (mseq[mseq_cnt].Master_octet_cnt - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
+    mseq[mseq_cnt].Master_checksum = checksumflag;
+    // mseq[mseq_cnt].Master_checksum = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
 }
 
 void mseq_upload_device (uint16_t size)
@@ -122,7 +173,7 @@ void mseq_upload_device (uint16_t size)
     uint16_t cks_offset = 1;
 
     rxdataSize = size;
-    mseq[mseq_cnt].Device_octet_cnt = rxdataSize;
+    mseq[mseq_cnt + cks_offset].Device_octet_cnt = rxdataSize;
     // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
     
     mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
@@ -336,19 +387,20 @@ static uint8_t Decode_CKS_AllDataChecksum (uint8_t Data)
 
 void Mseq_Display_PacketFrame (uint16_t cnt)
 {
-    uint16_t i = 0;
+    uint16_t i, j = 0;
     i = cnt;
 
-    printf("%c,",Decode_MC_ReadWrite(mseq[i].MC));
-    Print_MC_CommunicationChannel(mseq[i].MC);
+    printf("%c,",Decode_MC_ReadWrite(mseq[cnt].MC));
+    Print_MC_CommunicationChannel(mseq[cnt].MC);
     printf("%02X,%d,%02X,%c,%c,%02X,", 
-                                        Decode_MC_Address(mseq[i].MC),
-                                        Decode_CKT_Type(mseq[i].CKT),
-                                        Decode_CKT_Checksum(mseq[i].CKT),
-                                        Decode_CKS_EventFlag(mseq[i].CKS),
-                                        Decode_CKS_PDStatus(mseq[i].CKS),
-                                        Decode_CKS_Checksum(mseq[i].CKS)
+                                        Decode_MC_Address(mseq[cnt].MC),
+                                        Decode_CKT_Type(mseq[cnt].CKT),
+                                        Decode_CKT_Checksum(mseq[cnt].CKT),
+                                        Decode_CKS_EventFlag(mseq[cnt].CKS),
+                                        Decode_CKS_PDStatus(mseq[cnt].CKS),
+                                        Decode_CKS_Checksum(mseq[cnt].CKS)
                                         );
+    #if 0
     printf("%d,%d,%02X,%02X,%02X,%02X\r\n", 
                                         mseq[i].Master_octet_cnt,
                                         mseq[i].Device_octet_cnt,
@@ -357,6 +409,24 @@ void Mseq_Display_PacketFrame (uint16_t cnt)
                                         mseq[i].Start_Octet,
                                         mseq[i].End_Octet
                                         );
+    #else
+    printf("%d,%d,%02X,%02X,%02X,%02X,", 
+                                        mseq[cnt].Master_octet_cnt,
+                                        mseq[cnt].Device_octet_cnt,
+                                        mseq[cnt].Master_checksum,
+                                        mseq[cnt].Device_checksum,
+                                        mseq[cnt].Start_Octet,
+                                        mseq[cnt].End_Octet
+                                        );
+    
+    // for (i = 0; i < (mseq[cnt].Master_octet_cnt - mseq[cnt].Device_octet_cnt); i++)
+    for (i = 0; i < mseq[cnt].Master_octet_cnt; i++)
+    {
+        printf("%02X,", *(mseq[cnt].Start_Octet + i));
+    }
+    printf("\r\n");   
+    #endif
+
 }
 
 

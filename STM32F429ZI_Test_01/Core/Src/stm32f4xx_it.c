@@ -250,6 +250,7 @@ void USART2_IRQHandler(void)
 
     //   HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     // __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+    return ;
     }
   }
   /* USER CODE END USART2_IRQn 0 */

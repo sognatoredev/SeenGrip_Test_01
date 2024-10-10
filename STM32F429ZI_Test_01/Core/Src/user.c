@@ -29,6 +29,8 @@
 /*---- function prototypes ---------------------------------------------------*/
 /*---- data declarations -----------------------------------------------------*/
 
+uint8_t TestValue[10] = {0x70, 0x5D, 0x93, 0x15, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00};             //checksum Test.
+
 uint8_t queData[2000] = { 0 };
 uint16_t queDataNum = 0;
 uint8_t USB_TX_Data[2000] = { 0 };
@@ -58,7 +60,7 @@ uint8_t uart2_tx_buf[UART_TXDATA_MAX] = { 0 };
 uint8_t uart3_rx_buf[UART_RXDATA_MAX] = { 0 };
 uint8_t uart3_tx_buf[UART_TXDATA_MAX] = { 0 };
 
-
+uint8_t uart2_rx_stack_buf[UART_RX_IDLE_BUFSIZE * 4] = { 0 };
 
 uint8_t uart2_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
 uint8_t uart3_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };

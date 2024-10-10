@@ -37,7 +37,7 @@ extern uint8_t queData[];
 extern uint16_t queDataNum;
 extern uint8_t USB_TX_Data[];
 
-
+extern uint8_t TestValue[];
 
 /* USER CODE BEGIN Private defines */
 
@@ -153,6 +153,8 @@ extern uint8_t uart2_rx_tail_1;
 extern uint8_t urat3_rx_tail_1;
 
 #define UART_RX_IDLE_BUFSIZE        5000
+
+extern uint8_t uart2_rx_stack_buf[];
 
 extern uint8_t uart2_rx_IDLE_buf[];
 extern uint8_t uart3_rx_IDLE_buf[];

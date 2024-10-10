@@ -55,8 +55,8 @@ typedef struct
     uint8_t Master_checksum;
     uint8_t Device_checksum;
 
-    uint8_t Start_Octet;
-    uint8_t End_Octet;
+    uint8_t * Start_Octet;
+    uint8_t * End_Octet;
 } MSEQ_t;
 
 typedef struct MC_Communication_channel
@@ -95,6 +95,8 @@ extern  MSEQ_t mseq[MAX_MSEQ];
 
 extern void UART_RX_BufferClear (void);
 extern void Mseq_Display_PacketFrame (uint16_t cnt);
+
+extern void Verification_CKTChecksum (void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

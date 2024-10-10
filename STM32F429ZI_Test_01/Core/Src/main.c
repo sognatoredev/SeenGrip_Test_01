@@ -144,6 +144,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    // if(TIM1_CNT_1 >= 500)
+    // {
+    //   TIM1_CNT_1 = 0;
+    //   Verification_CKTChecksum();
+    // }
     UART_RX_BufferClear();
     debug_buf_read();
     /* USER CODE END WHILE */
