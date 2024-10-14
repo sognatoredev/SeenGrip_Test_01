@@ -158,15 +158,19 @@ void mseq_upload_master (uint16_t size)
     uart2_rx_stackcnt_total += rxdataSize; // octet 데이터 수 만큼 포인터 증가
 
     mseq[mseq_cnt].Master_octet_cnt = rxdataSize;
-
+    
     mseq[mseq_cnt].MC = uart2_rx_IDLE_buf[0];
     mseq[mseq_cnt].CKT = uart2_rx_IDLE_buf[1];
+    // mseq[mseq_cnt].MC = uart2_rx_stack_buf[0];
+    // mseq[mseq_cnt].CKT = uart2_rx_stack_buf[1];
 
     checksumflag = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (mseq[mseq_cnt].Master_octet_cnt - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
     mseq[mseq_cnt].Master_checksum = checksumflag;
+
     // mseq[mseq_cnt].Master_checksum = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
 }
 
+#if 0
 void mseq_upload_device (uint16_t size)
 {
     uint16_t rxdataSize = 0;
@@ -181,18 +185,36 @@ void mseq_upload_device (uint16_t size)
 
     mseq_cnt++;
 }
+#else
+void mseq_upload_device (uint16_t size)
+{
+    uint16_t rxdataSize = 0;
+    uint16_t cks_offset = 1;
+
+    rxdataSize = size;
+    mseq[mseq_cnt + 1].Device_octet_cnt = rxdataSize;
+    // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
+    
+    mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+    // Decode_GetChecksum(uart6_rx_IDLE_buf[0], rxdataSize);
+
+    mseq_cnt++;
+}
+#endif
 
 void mseq_display (void)
 {
     uint16_t i = 0;
+    uint8_t OffsetValue = 1;
 
     for (i = 0; i < mseq_cnt; ++i)
     {
         // printf("%d,%d,%d,%d\r\n", i, mseq[i].MC, mseq[i].CKT, mseq[i].CKS);
-        printf("%d,%d,%d,%d,", i, mseq[i].MC, mseq[i].CKT, mseq[i].CKS);
+        printf("%d,%d,%d,%d,", i, mseq[i+OffsetValue].MC, mseq[i+OffsetValue].CKT, mseq[i+OffsetValue].CKS);
         Mseq_Display_PacketFrame(i);
         // HAL_Delay(1);
     }
+    printf("ProcessData cnt : %d\r\n", iol_processdata_cnt);
 }
 
 
@@ -388,7 +410,8 @@ static uint8_t Decode_CKS_AllDataChecksum (uint8_t Data)
 void Mseq_Display_PacketFrame (uint16_t cnt)
 {
     uint16_t i, j = 0;
-    i = cnt;
+    uint8_t OffsetValue = 1;
+    cnt += OffsetValue;
 
     printf("%c,",Decode_MC_ReadWrite(mseq[cnt].MC));
     Print_MC_CommunicationChannel(mseq[cnt].MC);
@@ -434,7 +457,7 @@ static uint8_t UserButton_BufferClear (void)
 {
     uint8_t buttonstatus = 0;
 
-    if (TIM1_CNT_2 >= 100)
+    if (TIM1_CNT_2 >= 500)
     {
         TIM1_CNT_2 = 0;
 

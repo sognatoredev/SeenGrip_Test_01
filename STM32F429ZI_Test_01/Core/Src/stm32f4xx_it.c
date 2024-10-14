@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -339,7 +340,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 
-  TIM1_CNT_1++; // LED ?ï¿½ï¿½ï¿½??????? 
+  TIM1_CNT_1++; // LED ?ï¿½ï¿½ï¿????????? 
   TIM1_CNT_2++; //
   TIM1_CNT_3++; //
 }
@@ -361,11 +362,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
   if (huart->Instance == USART6)
   {
-    mseq_upload_device(Size);
-
     __HAL_DMA_DISABLE(&hdma_usart6_rx);
     hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
     __HAL_DMA_ENABLE(&hdma_usart6_rx);
+
+    mseq_upload_device(Size);
 
     HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
@@ -379,14 +380,22 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
   else if (huart->Instance == USART2)
   {
-    mseq_upload_master(Size);
-
+    
     __HAL_DMA_DISABLE(&hdma_usart2_rx);
     hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
     __HAL_DMA_ENABLE(&hdma_usart2_rx);
 
+    mseq_upload_master(Size);
+
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+  }
+
+  // if (mseq[mseq_cnt] == 0x00)
+  if (uart2_rx_IDLE_buf[0] == 0x00)
+  {
+    HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
+    iol_processdata_cnt++;
   }
 }
 

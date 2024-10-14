@@ -90,7 +90,8 @@ Mseq_Checksum_t MseqChecksum =
 
 #define MAX_RX_DATA             20000
 
-#define MAX_MSEQ                1000
+#define MAX_MSEQ                600
+// #define MAX_MSEQ                1000
 extern  MSEQ_t mseq[MAX_MSEQ];
 
 extern void UART_RX_BufferClear (void);

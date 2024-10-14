@@ -89,7 +89,7 @@ uint8_t urat3_rx_tail_1 = 0;
 
 uint16_t uart2_rxcpltcallback_cnt = 0;
 
-
+uint16_t iol_processdata_cnt = 0;
 
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere
