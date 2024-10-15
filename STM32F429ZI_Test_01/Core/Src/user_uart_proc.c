@@ -218,7 +218,7 @@ void mseq_display (void)
         Mseq_Display_PacketFrame(i);
         // HAL_Delay(1);
     }
-    printf("ProcessData cnt : %d\r\n", iol_processdata_cnt);
+    // printf("ProcessData cnt : %d\r\n", iol_processdata_cnt);
 
     iol_processdata_cnt = 0;
 }

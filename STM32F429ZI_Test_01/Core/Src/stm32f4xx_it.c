@@ -410,6 +410,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
   else if (huart->Instance == USART2)
   {
+    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
     debug_uarttest_value = 0x01; // uart1 bit set.
 
     __HAL_DMA_DISABLE(&hdma_usart2_rx);
@@ -428,12 +429,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     #endif
+    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
   }
 
   // if (mseq[mseq_cnt] == 0x00)
   if (uart2_rx_IDLE_buf[0] == 0x00)
   {
-    HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
+    // HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
     iol_processdata_cnt++;
   }
 }

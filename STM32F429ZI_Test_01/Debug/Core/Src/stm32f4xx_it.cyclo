@@ -17,4 +17,4 @@
 ../Core/Src/stm32f4xx_it.c:344:6:HAL_TIM_PeriodElapsedCallback	3
 ../Core/Src/stm32f4xx_it.c:371:6:HAL_UART_RxCpltCallback	1
 ../Core/Src/stm32f4xx_it.c:376:6:HAL_UARTEx_RxEventCallback	7
-../Core/Src/stm32f4xx_it.c:446:6:HAL_GPIO_EXTI_Callback	2
+../Core/Src/stm32f4xx_it.c:448:6:HAL_GPIO_EXTI_Callback	2
