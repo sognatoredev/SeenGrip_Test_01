@@ -16,6 +16,7 @@
 #include "user.h"
 
 #include "queue.h"
+// #include <stdint.h>
 /*******************************************************************************
  * EXTERNAL REFERENCES             NOTE: only use if not available in header file
  *******************************************************************************/
@@ -31,9 +32,9 @@
 
 uint8_t TestValue[10] = {0x70, 0x5D, 0x93, 0x15, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00};             //checksum Test.
 
-uint8_t queData[2000] = { 0 };
+uint8_t queData[quedata_arraylength] = { 0 };
 uint16_t queDataNum = 0;
-uint8_t USB_TX_Data[2000] = { 0 };
+uint8_t USB_TX_Data[quedata_arraylength] = { 0 };
 
 /* Timer ch 1 count var. */
 uint32_t TIM1_CNT_1 = 0;
@@ -63,10 +64,10 @@ uint8_t uart3_tx_buf[UART_TXDATA_MAX] = { 0 };
 uint8_t uart2_rx_stack_buf[UART_RX_IDLE_BUFSIZE * 4] = { 0 };
 
 uint8_t uart2_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
-uint8_t uart3_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
+// uint8_t uart3_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
 uint8_t uart6_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
 
-uint16_t uart_rx_IDLE_TotalCnt = 0;
+uint32_t uart_rx_IDLE_TotalCnt = 0;
 
 uint16_t uart2_rx_index = 0;
 uint16_t uart2_tx_index = 0;
@@ -77,7 +78,7 @@ uint16_t uart3_tx_index = 0;
 uint8_t uart2_rx_flag = 0;
 uint8_t uart3_rx_flag = 0;
 
-uint16_t uart_rx_cnt_total = 0;
+uint32_t uart_rx_cnt_total = 0;
 uint16_t uart2_rx_cnt = 0;
 uint16_t uart3_rx_cnt = 0;
 
@@ -90,6 +91,8 @@ uint8_t urat3_rx_tail_1 = 0;
 uint16_t uart2_rxcpltcallback_cnt = 0;
 
 uint16_t iol_processdata_cnt = 0;
+
+uint8_t debug_uarttest_value = 0x00;
 
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere

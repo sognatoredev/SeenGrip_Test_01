@@ -25,6 +25,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "usbd_def.h"
 #include "queue.h"
@@ -32,6 +33,7 @@ extern "C" {
 // #include "user_uart_proc.h"
 // #include "debug_buf.h"
 /* USER CODE END Includes */
+#define quedata_arraylength       5000
 
 extern uint8_t queData[];
 extern uint16_t queDataNum;
@@ -91,10 +93,11 @@ extern void User_CDC_Transmit_FS(uint8_t * pdata, uint16_t datalength);
 
 #define USER_BUTTON_PIN         GPIO_PIN_13
 
-#define UART_TIME_PORT          GPIOG
+#define UART_DEBUG_PORT          GPIOG
 
-#define UART_RX_BUFWR_PIN       GPIO_PIN_5
-#define UART_TX_CPLT_TIME_PIN   GPIO_PIN_6
+#define DEBUG_TEST_PIN          GPIO_PIN_5
+#define DEBUG_TEST_UART_PIN_1   GPIO_PIN_4
+#define UART_TX_CPLT_TIME_PIN   GPIO_PIN_3
 
 #define IOLINK_WAKEUP_PORT      GPIOG
 
@@ -143,7 +146,7 @@ extern uint16_t uart2_rxcpltcallback_cnt;
 
 extern uint8_t UserButton_Flag;
 
-extern uint16_t uart_rx_cnt_total;
+extern uint32_t uart_rx_cnt_total;
 extern uint16_t uart2_rx_cnt;
 extern uint16_t uart3_rx_cnt;
 
@@ -152,7 +155,8 @@ extern uint8_t uart3_rx_ready;
 extern uint8_t uart2_rx_tail_1;
 extern uint8_t urat3_rx_tail_1;
 
-#define UART_RX_IDLE_BUFSIZE        10000
+// #define UART_RX_IDLE_BUFSIZE        10000
+#define UART_RX_IDLE_BUFSIZE        5000
 
 extern uint8_t uart2_rx_stack_buf[];
 
@@ -160,10 +164,11 @@ extern uint8_t uart2_rx_IDLE_buf[];
 extern uint8_t uart3_rx_IDLE_buf[];
 extern uint8_t uart6_rx_IDLE_buf[];
 
-extern uint16_t uart_rx_IDLE_TotalCnt;
+extern uint32_t uart_rx_IDLE_TotalCnt;
 
 extern uint16_t iol_processdata_cnt;
 
+extern uint8_t debug_uarttest_value;
 
 /* USER CODE END Private defines */
 

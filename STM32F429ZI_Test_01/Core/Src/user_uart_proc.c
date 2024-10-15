@@ -152,7 +152,8 @@ void mseq_upload_master (uint16_t size)
     rxdataSize = (uint8_t)size;
     checksumlength = rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt;
     
-    memcpy(uart2_rx_stack_buf + uart2_rx_stackcnt_total, uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
+    // memcpy(uart2_rx_stack_buf + uart2_rx_stackcnt_total, uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
+    memcpy(uart2_rx_stack_buf + uart2_rx_stackcnt_total, uart2_rx_IDLE_buf, rxdataSize);
     mseq[mseq_cnt].Start_Octet = uart2_rx_stack_buf + uart2_rx_stackcnt_total; // 데이터 시작점부터 출력 하기위한 포인터 
     // mseq[mseq_cnt].End_Octet = uart2_rx_IDLE_buf[rxdataSize - 1]; // 데이터 끝 지점 포인터 (수정 필요함)
     uart2_rx_stackcnt_total += rxdataSize; // octet 데이터 수 만큼 포인터 증가
@@ -167,6 +168,7 @@ void mseq_upload_master (uint16_t size)
     checksumflag = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (mseq[mseq_cnt].Master_octet_cnt - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
     mseq[mseq_cnt].Master_checksum = checksumflag;
 
+    mseq_cnt++;
     // mseq[mseq_cnt].Master_checksum = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
 }
 
@@ -192,20 +194,22 @@ void mseq_upload_device (uint16_t size)
     uint16_t cks_offset = 1;
 
     rxdataSize = size;
-    mseq[mseq_cnt + 1].Device_octet_cnt = rxdataSize;
+    // mseq[mseq_cnt + 1].Device_octet_cnt = rxdataSize;
+    mseq[mseq_cnt].Device_octet_cnt = rxdataSize;
     // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
     
-    mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+    // mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+    mseq[mseq_cnt].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
     // Decode_GetChecksum(uart6_rx_IDLE_buf[0], rxdataSize);
 
-    mseq_cnt++;
+    // mseq_cnt++;
 }
 #endif
 
 void mseq_display (void)
 {
     uint16_t i = 0;
-    uint8_t OffsetValue = 1;
+    uint8_t OffsetValue = 0;
 
     for (i = 0; i < mseq_cnt; ++i)
     {
@@ -215,6 +219,8 @@ void mseq_display (void)
         // HAL_Delay(1);
     }
     printf("ProcessData cnt : %d\r\n", iol_processdata_cnt);
+
+    iol_processdata_cnt = 0;
 }
 
 
@@ -222,7 +228,7 @@ void debug_buf_read (void)
 {
   if (uart_rx_IDLE_TotalCnt >= MAX_RX_DATA)
   {
-    uart_rx_IDLE_TotalCnt = 0;
+    uart_rx_IDLE_TotalCnt = 2;
 
     mseq_display();
     // Mseq_Display_PacketFrame();
@@ -410,7 +416,7 @@ static uint8_t Decode_CKS_AllDataChecksum (uint8_t Data)
 void Mseq_Display_PacketFrame (uint16_t cnt)
 {
     uint16_t i, j = 0;
-    uint8_t OffsetValue = 1;
+    uint8_t OffsetValue = 0;
     cnt += OffsetValue;
 
     printf("%c,",Decode_MC_ReadWrite(mseq[cnt].MC));
@@ -467,8 +473,9 @@ static uint8_t UserButton_BufferClear (void)
 
             UserButton_Flag = 0;
 
-            memset(uart2_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE);
-            memset(uart6_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE);
+            // memset(uart2_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE);
+            // memset(uart6_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE);
+            // memset(uart6_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE * 4);
             // memset(mseq, 0, 1000);
         }
     }
@@ -481,19 +488,27 @@ void UART_RX_BufferClear (void)
     {
         printf("\r\nUART RX Buffer Clear.\r\n\n");
         
-        uart_rx_IDLE_TotalCnt = 0;
+        memset(uart2_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE);
+        memset(uart6_rx_IDLE_buf, 0, UART_RX_IDLE_BUFSIZE);
+        memset(uart2_rx_stack_buf, 0, UART_RX_IDLE_BUFSIZE * 4);
+
+        uart2_rx_stackcnt_total = 0;
+        uart_rx_IDLE_TotalCnt = 2;
         mseq_cnt = 0;
+
+        HAL_UART_DMAResume(&huart2);
+        HAL_UART_DMAResume(&huart6);
         
         __HAL_DMA_DISABLE(&hdma_usart2_rx);
         hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
         __HAL_DMA_ENABLE(&hdma_usart2_rx);
 
-        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
-        __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
-
         __HAL_DMA_DISABLE(&hdma_usart6_rx);
         hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
         __HAL_DMA_ENABLE(&hdma_usart6_rx);
+
+        HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+        __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
 
         HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
         __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);

@@ -238,6 +238,8 @@ void TIM1_UP_TIM10_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   /* USER CODE BEGIN USART2_IRQn 0 */
+  
+  #if 0
   if (uart_rx_IDLE_TotalCnt < 2)
   {
     if ((__HAL_UART_GET_FLAG(&huart2, UART_FLAG_FE)) || (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE)))
@@ -245,15 +247,30 @@ void USART2_IRQHandler(void)
       __HAL_UART_CLEAR_OREFLAG(&huart2);
       __HAL_UART_CLEAR_FEFLAG(&huart2);
 
-    //   __HAL_DMA_DISABLE(&hdma_usart2_rx);
-    //   hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
-    //   __HAL_DMA_ENABLE(&hdma_usart2_rx);
+      // __HAL_DMA_DISABLE(&hdma_usart2_rx);
+      // hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+      // __HAL_DMA_ENABLE(&hdma_usart2_rx);
 
-    //   HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
-    // __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+      // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+      // __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     return ;
     }
   }
+  #else
+  if ((__HAL_UART_GET_FLAG(&huart2, UART_FLAG_FE)) || (__HAL_UART_GET_FLAG(&huart2, UART_FLAG_ORE)))
+  {
+    __HAL_UART_CLEAR_OREFLAG(&huart2);
+    __HAL_UART_CLEAR_FEFLAG(&huart2);
+
+    // __HAL_DMA_DISABLE(&hdma_usart2_rx);
+    // hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    // __HAL_DMA_ENABLE(&hdma_usart2_rx);
+
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    // __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+
+  }
+  #endif
   /* USER CODE END USART2_IRQn 0 */
   HAL_UART_IRQHandler(&huart2);
   /* USER CODE BEGIN USART2_IRQn 1 */
@@ -340,7 +357,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 
-  TIM1_CNT_1++; // LED ?���????????? 
+  TIM1_CNT_1++; // LED ?���?????????? 
   TIM1_CNT_2++; //
   TIM1_CNT_3++; //
 }
@@ -362,15 +379,28 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
   if (huart->Instance == USART6)
   {
+    if ( debug_uarttest_value == 0x00) // deviece가 연이어서 인터럽트가 발생되는 경우 
+    {
+      HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
+    }
+    debug_uarttest_value = 0x00; // uart1 bit clear.
+
     __HAL_DMA_DISABLE(&hdma_usart6_rx);
     hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
     __HAL_DMA_ENABLE(&hdma_usart6_rx);
 
     mseq_upload_device(Size);
 
+    #if 0
     HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
-
+    #else
+    // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLE);
+    __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
+    ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
+    #endif
 
     // __HAL_UART_CLEAR_IDLEFLAG(huart);
     // // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
@@ -380,15 +410,24 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
   else if (huart->Instance == USART2)
   {
-    
+    debug_uarttest_value = 0x01; // uart1 bit set.
+
     __HAL_DMA_DISABLE(&hdma_usart2_rx);
     hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
     __HAL_DMA_ENABLE(&hdma_usart2_rx);
 
     mseq_upload_master(Size);
 
+    #if 0
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+    #else
+    __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
+    // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLE);
+    ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
+    #endif
   }
 
   // if (mseq[mseq_cnt] == 0x00)

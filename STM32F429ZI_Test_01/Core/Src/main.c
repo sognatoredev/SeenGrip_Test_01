@@ -128,7 +128,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  Q_Init(&USB_TX_Q, (uint8_t *) USB_TX_Data, 2000);
+  Q_Init(&USB_TX_Q, (uint8_t *) USB_TX_Data, quedata_arraylength);
 
   HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
