@@ -44,9 +44,17 @@ static uint8_t Decode_CalChecksum(const uint8_t * pData, uint8_t length)  // CKT
     // ck8 ^= *pData++; // MC Check 
 
     // ck8 ^= *pData++ & 0xC0; // CKT 6b clear. CKT Check
+    // for (uint8_t i = 0; i < checksumsize; i++)
     for (uint8_t i = 0; i < checksumsize; i++)
     {
-        ck8 ^= *pData++;
+        if ( i == 1 )
+        {
+            ck8 ^= *pData++ & 0xC0;
+        }
+        else
+        {
+            ck8 ^= *pData++;
+        }
     }
     // if (checksumsize < 2)
     // {
@@ -145,12 +153,13 @@ void mseq_upload_master (uint16_t size)
     // uint16_t rxdataSize = 0;
     // uint16_t cks_offset = 1;
     uint8_t rxdataSize = 0;
-    uint8_t cks_offset = 1;
+    uint8_t cks_offset = 0;
     uint8_t checksumflag = 0;
     uint8_t checksumlength = 0;
 
     rxdataSize = (uint8_t)size;
     checksumlength = rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt;
+    mseq[mseq_cnt].CKS = uart6_rx_IDLE_buf[mseq[mseq_cnt].Device_octet_cnt - 1];
     
     // memcpy(uart2_rx_stack_buf + uart2_rx_stackcnt_total, uart2_rx_IDLE_buf, (rxdataSize - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
     memcpy(uart2_rx_stack_buf + uart2_rx_stackcnt_total, uart2_rx_IDLE_buf, rxdataSize);
@@ -160,10 +169,12 @@ void mseq_upload_master (uint16_t size)
 
     mseq[mseq_cnt].Master_octet_cnt = rxdataSize;
     
+    
     mseq[mseq_cnt].MC = uart2_rx_IDLE_buf[0];
     mseq[mseq_cnt].CKT = uart2_rx_IDLE_buf[1];
     // mseq[mseq_cnt].MC = uart2_rx_stack_buf[0];
     // mseq[mseq_cnt].CKT = uart2_rx_stack_buf[1];
+    
 
     checksumflag = Decode_CKT_GetChecksum((uint8_t *) uart2_rx_IDLE_buf, (mseq[mseq_cnt].Master_octet_cnt - mseq[mseq_cnt + cks_offset].Device_octet_cnt));
     mseq[mseq_cnt].Master_checksum = checksumflag;
@@ -190,16 +201,22 @@ void mseq_upload_device (uint16_t size)
 #else
 void mseq_upload_device (uint16_t size)
 {
-    uint16_t rxdataSize = 0;
+    // uint16_t rxdataSize = 0;
+    uint8_t rxdataSize = 0;
     uint16_t cks_offset = 1;
 
-    rxdataSize = size;
+    // rxdataSize = (uint8_t)size;
+    mseq[mseq_cnt].Device_octet_cnt = (uint8_t)size;
+
+    // mseq[mseq_cnt].Device_octet_cnt = rxdataSize;
+    // mseq[mseq_cnt].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+
     // mseq[mseq_cnt + 1].Device_octet_cnt = rxdataSize;
-    mseq[mseq_cnt].Device_octet_cnt = rxdataSize;
+    
     // mseq[mseq_cnt].CKS = uart3_rx_IDLE_buf[rxdataSize - 1];
     
     // mseq[(mseq_cnt + cks_offset)].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
-    mseq[mseq_cnt].CKS = uart6_rx_IDLE_buf[rxdataSize - 1];
+    
     // Decode_GetChecksum(uart6_rx_IDLE_buf[0], rxdataSize);
 
     // mseq_cnt++;

@@ -170,6 +170,8 @@ extern uint16_t iol_processdata_cnt;
 
 extern uint8_t debug_uarttest_value;
 
+extern uint32_t IOL_Master_RxEventCallback_Cnt;
+
 /* USER CODE END Private defines */
 
 

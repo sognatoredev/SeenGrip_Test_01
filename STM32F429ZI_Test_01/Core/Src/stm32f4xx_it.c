@@ -357,7 +357,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 
-  TIM1_CNT_1++; // LED ?���?????????? 
+  TIM1_CNT_1++; // LED ?���???????????? 
   TIM1_CNT_2++; //
   TIM1_CNT_3++; //
 }
@@ -373,33 +373,39 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   
 }
 
+static uint8_t tx_tag;
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
   uart_rx_IDLE_TotalCnt += Size;
 
   if (huart->Instance == USART6)
   {
-    if ( debug_uarttest_value == 0x00) // deviece가 연이어서 인터럽트가 발생되는 경우 
-    {
-      HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
-    }
-    debug_uarttest_value = 0x00; // uart1 bit clear.
-
+    // if ( debug_uarttest_value == 0x00) // deviece�?? ?��?��?��?�� ?��?��?��?���?? 발생?��?�� 경우 
+    // {
+    //   HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
+    // }
+    // debug_uarttest_value = 0x00; // uart1 bit clear.
+    // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
     __HAL_DMA_DISABLE(&hdma_usart6_rx);
     hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
     __HAL_DMA_ENABLE(&hdma_usart6_rx);
 
     mseq_upload_device(Size);
+    tx_tag += 1;
 
     #if 0
     HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
     #else
     // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLE);
-    __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
-    ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+    // __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
+    // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
+    // __HAL_UART_CLEAR_IDLEFLAG(&huart6);
+    // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
     HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
+    // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
     #endif
 
     // __HAL_UART_CLEAR_IDLEFLAG(huart);
@@ -410,12 +416,32 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
   else if (huart->Instance == USART2)
   {
-    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
+    if(tx_tag == 0){
+      //못들어온 경우
+      HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_PIN,GPIO_PIN_SET);
+    }
+    else if(tx_tag == 1){
+      HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1,GPIO_PIN_SET);
+    }
+    else{
+      HAL_GPIO_WritePin(UART_DEBUG_PORT, UART_TX_CPLT_TIME_PIN,GPIO_PIN_SET);
+      //여러번 들어온 경우
+    }
+    
+    tx_tag = 0;
+    // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
     debug_uarttest_value = 0x01; // uart1 bit set.
 
     __HAL_DMA_DISABLE(&hdma_usart2_rx);
     hdma_usart2_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
     __HAL_DMA_ENABLE(&hdma_usart2_rx);
+
+    #if 0
+    if ( IOL_Master_RxEventCallback_Cnt >= 4 ) // 체크?�� ?��?���?? ?��기위?�� 브레?��?�� ?��?��?��
+    {
+      IOL_Master_RxEventCallback_Cnt = 0;
+    }
+    #endif
 
     mseq_upload_master(Size);
 
@@ -429,15 +455,22 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     #endif
-    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
+    // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
+    IOL_Master_RxEventCallback_Cnt++; // 체크?�� ?��?�� ?��기위?�� 브레?��?�� ?��?��?���?? 걸어�?? 카운?���?? 
+
+
+    
+    HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_PIN,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1,GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(UART_DEBUG_PORT, UART_TX_CPLT_TIME_PIN,GPIO_PIN_RESET);
   }
 
-  // if (mseq[mseq_cnt] == 0x00)
-  if (uart2_rx_IDLE_buf[0] == 0x00)
-  {
-    // HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
-    iol_processdata_cnt++;
-  }
+  // // if (mseq[mseq_cnt] == 0x00)
+  // if (uart2_rx_IDLE_buf[0] == 0x00)
+  // {
+  //   // HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_4);
+  //   iol_processdata_cnt++;
+  // }
 }
 
 /**

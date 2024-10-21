@@ -94,6 +94,8 @@ uint16_t iol_processdata_cnt = 0;
 
 uint8_t debug_uarttest_value = 0x00;
 
+uint32_t IOL_Master_RxEventCallback_Cnt = 0;
+
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere
  *******************************************************************************/
