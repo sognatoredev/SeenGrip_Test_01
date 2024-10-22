@@ -65,7 +65,11 @@ uint8_t uart2_rx_stack_buf[UART_RX_IDLE_BUFSIZE * 4] = { 0 };
 
 uint8_t uart2_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
 // uint8_t uart3_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
-uint8_t uart6_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
+// uint8_t uart6_rx_IDLE_buf[UART_RX_IDLE_BUFSIZE] = { 0 };
+uint8_t uart6_rx_IDLE_buf[500] = { 0 };
+
+uint8_t uart6_rx_dumnmy_buf[128] = { 0 };
+uint8_t uart6_rx_cnt = 0;
 
 uint32_t uart_rx_IDLE_TotalCnt = 0;
 
@@ -95,6 +99,8 @@ uint16_t iol_processdata_cnt = 0;
 uint8_t debug_uarttest_value = 0x00;
 
 uint32_t IOL_Master_RxEventCallback_Cnt = 0;
+
+uint16_t prv_uart6_size = 0;
 
 /*******************************************************************************
  * PRIVATE DECLARATIONS            Defined here, used elsewhere

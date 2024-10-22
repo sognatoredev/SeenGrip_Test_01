@@ -59,11 +59,12 @@
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern TIM_HandleTypeDef htim1;
 extern DMA_HandleTypeDef hdma_usart2_rx;
-extern DMA_HandleTypeDef hdma_usart6_rx;
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
 
+extern UART_HandleTypeDef huart6;
+// extern  MSEQ_t mseq[MAX_MSEQ];
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -293,20 +294,6 @@ void EXTI15_10_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles DMA2 stream1 global interrupt.
-  */
-void DMA2_Stream1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA2_Stream1_IRQn 0 */
-
-  /* USER CODE END DMA2_Stream1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart6_rx);
-  /* USER CODE BEGIN DMA2_Stream1_IRQn 1 */
-
-  /* USER CODE END DMA2_Stream1_IRQn 1 */
-}
-
-/**
   * @brief This function handles USB On The Go FS global interrupt.
   */
 void OTG_FS_IRQHandler(void)
@@ -357,79 +344,90 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
   }
 
-  TIM1_CNT_1++; // LED ?ï¿½ï¿½ï¿½???????????? 
+  TIM1_CNT_1++; // LED ?ï¿½ï¿½ï¿??????????????? 
   TIM1_CNT_2++; //
   TIM1_CNT_3++; //
 }
 
-/**
-  * @brief  Rx Transfer completed callbacks.
-  * @param  huart  Pointer to a UART_HandleTypeDef structure that contains
-  *                the configuration information for the specified UART module.
-  * @retval None
-  */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   
+  if (huart->Instance == USART6) // µð¹ÙÀÌ½º¿¡¼­ ¼Û½ÅÇÏ´Â µ¥ÀÌÅÍÀÇ ¼ö¸¦ ¾Ë±â À§ÇØ
+  {
+    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
+    uart6_rx_cnt++;
+    HAL_UART_Receive_IT(&huart6, &uart6_rx_dumnmy_buf, 1);
+    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
+  }
 }
 
 static uint8_t tx_tag;
+static uint16_t device_rx_cnt;
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
   uart_rx_IDLE_TotalCnt += Size;
 
-  if (huart->Instance == USART6)
+  if (huart->Instance == USART6)  // »ç¿ëÇÏÁö ¾ÊÀ½.
   {
-    // if ( debug_uarttest_value == 0x00) // devieceï¿½?? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½?? ë°œìƒ?ï¿½ï¿½?ï¿½ï¿½ ê²½ìš° 
+    // if ( debug_uarttest_value == 0x00) // devieceï¿????? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿????? ë°œìƒ?ï¿½ï¿½?ï¿½ï¿½ ê²½ìš° 
     // {
     //   HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
     // }
     // debug_uarttest_value = 0x00; // uart1 bit clear.
     // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
-    __HAL_DMA_DISABLE(&hdma_usart6_rx);
-    hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
-    __HAL_DMA_ENABLE(&hdma_usart6_rx);
+    // __HAL_DMA_DISABLE(&hdma_usart6_rx);
+    // hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    // __HAL_DMA_ENABLE(&hdma_usart6_rx);
+    
+    // if ((tx_tag >= 1))
+    // {
+    //   mseq_upload_device(device_rx_cnt);
+    // }
+    // else
+    // {
+    //   mseq_upload_device(Size);
+    //   device_rx_cnt = Size;
+    // }
 
-    mseq_upload_device(Size);
-    tx_tag += 1;
-
-    #if 0
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
-    #else
+    // tx_tag += 1;
+    // mseq_upload_device(Size);
+    
+    // #if 1
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    // __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
+    // #else
     // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLE);
     // __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
     // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
     // __HAL_UART_CLEAR_IDLEFLAG(&huart6);
     // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
-    __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
     // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_PIN);
-    #endif
+    // #endif
 
     // __HAL_UART_CLEAR_IDLEFLAG(huart);
     // // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
     // ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
 
-    // HAL_UARTEx_ReceiveToIdle_DMA(&huart6, uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
   }
   else if (huart->Instance == USART2)
   {
-    if(tx_tag == 0){
-      //ëª»ë“¤ì–´ì˜¨ ê²½ìš°
-      HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_PIN,GPIO_PIN_SET);
-    }
-    else if(tx_tag == 1){
-      HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1,GPIO_PIN_SET);
-    }
-    else{
-      HAL_GPIO_WritePin(UART_DEBUG_PORT, UART_TX_CPLT_TIME_PIN,GPIO_PIN_SET);
-      //ì—¬ëŸ¬ë²ˆ ë“¤ì–´ì˜¨ ê²½ìš°
-    }
-    
-    tx_tag = 0;
-    // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
+    // if(tx_tag == 0){
+    //   //¾Èµé¾î¿Â °æ¿ì
+    //   // HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_PIN,GPIO_PIN_SET);
+    // }
+    // else if(tx_tag == 1){
+    //   // HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1,GPIO_PIN_SET);
+    // }
+    // else{
+    //   // HAL_GPIO_WritePin(UART_DEBUG_PORT, UART_TX_CPLT_TIME_PIN,GPIO_PIN_SET);
+    //   //Áßº¹ÇØ¼­ µé¾î¿Â °æ¿ì
+    // }
+    mseq_upload_device(uart6_rx_cnt);
+    uart6_rx_cnt = 0;
+
+    // tx_tag = 0;
+    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
     debug_uarttest_value = 0x01; // uart1 bit set.
 
     __HAL_DMA_DISABLE(&hdma_usart2_rx);
@@ -437,32 +435,57 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     __HAL_DMA_ENABLE(&hdma_usart2_rx);
 
     #if 0
-    if ( IOL_Master_RxEventCallback_Cnt >= 4 ) // ì²´í¬?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ï¿½?? ?ï¿½ï¿½ê¸°ìœ„?ï¿½ï¿½ ë¸Œë ˆ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½
+    if ( IOL_Master_RxEventCallback_Cnt >= 4 ) // ì²´í¬?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ï¿????? ?ï¿½ï¿½ê¸°ìœ„?ï¿½ï¿½ ë¸Œë ˆ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½
     {
       IOL_Master_RxEventCallback_Cnt = 0;
     }
     #endif
 
+
+  //  #if 1 // ?ï¿½ï¿½ë°”ì´?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿??? ?ï¿½ï¿½?ï¿½ï¿½ï¿??? ë§ˆï¿½?ï¿??? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿??? ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ë§ˆìŠ¤?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ì²˜ë¦¬?? uart6 en ?ï¿½ï¿½ ?ï¿½ï¿½ï¿??? ?ï¿½ï¿½?ï¿½ï¿½.
+    
+    // device_rx_cnt = UART_RX_IDLE_BUFSIZE - hdma_usart6_rx.Instance->NDTR;
+    
+    // __HAL_DMA_DISABLE(&hdma_usart6_rx);
+    // hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    // __HAL_DMA_ENABLE(&hdma_usart6_rx);
+    // #endif
+    
+    // mseq_upload_device(device_rx_cnt);
     mseq_upload_master(Size);
 
     #if 0
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     #else
-    __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
+    
     // __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLE);
+    __HAL_UART_GET_FLAG(huart, UART_FLAG_IDLE);
     ATOMIC_SET_BIT(huart->Instance->CR1, USART_CR1_IDLEIE);
     HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *) uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
     __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
     #endif
     // HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
-    IOL_Master_RxEventCallback_Cnt++; // ì²´í¬?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½ê¸°ìœ„?ï¿½ï¿½ ë¸Œë ˆ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿½?? ê±¸ì–´ï¿½?? ì¹´ìš´?ï¿½ï¿½ï¿½?? 
+    IOL_Master_RxEventCallback_Cnt++; // ì²´í¬?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½ê¸°ìœ„?ï¿½ï¿½ ë¸Œë ˆ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ï¿????? ê±¸ì–´ï¿????? ì¹´ìš´?ï¿½ï¿½ï¿????? 
 
+    // HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    // HAL_UART_Receive_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    // __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
 
-    
-    HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_PIN,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1,GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(UART_DEBUG_PORT, UART_TX_CPLT_TIME_PIN,GPIO_PIN_RESET);
+    #if 0
+    mseq_upload_device((UART_RX_IDLE_BUFSIZE - hdma_usart6_rx.Instance->NDTR));
+
+    __HAL_DMA_DISABLE(&hdma_usart6_rx);
+    hdma_usart6_rx.Instance->NDTR = UART_RX_IDLE_BUFSIZE;
+    __HAL_DMA_ENABLE(&hdma_usart6_rx);
+
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
+    __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
+    #endif
+    // HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_PIN,GPIO_PIN_RESET);
+    // HAL_GPIO_WritePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1,GPIO_PIN_RESET);
+    // HAL_GPIO_WritePin(UART_DEBUG_PORT, UART_TX_CPLT_TIME_PIN,GPIO_PIN_RESET);
+    HAL_GPIO_TogglePin(UART_DEBUG_PORT, DEBUG_TEST_UART_PIN_1);
   }
 
   // // if (mseq[mseq_cnt] == 0x00)

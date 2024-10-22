@@ -48,7 +48,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-extern DMA_HandleTypeDef hdma_usart6_rx;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 
 Q_queue_t USB_TX_Q;
@@ -133,8 +132,12 @@ int main(void)
   HAL_UARTEx_ReceiveToIdle_DMA(&huart2, (uint8_t *)uart2_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart2_rx, DMA_IT_HT);
 
+  #if 0
   HAL_UARTEx_ReceiveToIdle_DMA(&huart6, (uint8_t *)uart6_rx_IDLE_buf, UART_RX_IDLE_BUFSIZE);
   __HAL_DMA_DISABLE_IT(&hdma_usart6_rx, DMA_IT_HT);
+  #else
+  HAL_UART_Receive_IT(&huart6, &uart6_rx_dumnmy_buf, 1);
+  #endif
 
   HAL_TIM_Base_Start_IT(&htim1);
   

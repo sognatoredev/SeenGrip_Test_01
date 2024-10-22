@@ -88,7 +88,7 @@ Mseq_Checksum_t MseqChecksum =
 };
 
 
-#define MAX_RX_DATA             20000
+#define MAX_RX_DATA             15000
 
 #define MAX_MSEQ                600
 // #define MAX_MSEQ                1000
@@ -98,6 +98,7 @@ extern void UART_RX_BufferClear (void);
 extern void Mseq_Display_PacketFrame (uint16_t cnt);
 
 extern void Verification_CKTChecksum (void);
+extern void mseq_uploaderror_device (void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

@@ -157,6 +157,7 @@ extern uint8_t urat3_rx_tail_1;
 
 // #define UART_RX_IDLE_BUFSIZE        10000
 #define UART_RX_IDLE_BUFSIZE        5000
+// #define UART_RX_IDLE_BUFSIZE        256
 
 extern uint8_t uart2_rx_stack_buf[];
 
@@ -171,6 +172,11 @@ extern uint16_t iol_processdata_cnt;
 extern uint8_t debug_uarttest_value;
 
 extern uint32_t IOL_Master_RxEventCallback_Cnt;
+
+extern uint16_t prv_uart6_size;
+
+extern uint8_t uart6_rx_dumnmy_buf[];
+extern uint8_t uart6_rx_cnt;
 
 /* USER CODE END Private defines */
 
